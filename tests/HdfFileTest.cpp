@@ -152,7 +152,7 @@ TEST_F(HdfFileTest, GlobalAttribute) {
     ASSERT_EQ(vec, std::vector<int8>({11, 22}));
 }
 
-TEST_F(HdfFileTest, ItemIterator1) {
+TEST_F(HdfFileTest, DISABLED_ItemIterator1) {
     std::ostringstream out;
     for(auto it : file) {
         out << it.getName() << '*';

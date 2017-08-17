@@ -49,3 +49,9 @@ if (NOT DEFINED TEST_DATA_PATH)
 endif ()
 target_compile_definitions(hdf4cpp-tests PRIVATE
         "TEST_DATA_PATH=\"${TEST_DATA_PATH}\"")
+
+add_test(
+        NAME hdf4cpp
+        COMMAND hdf4cpp-tests --gtest_output=xml:${PROJECT_BINARY_DIR}/test_details.xml
+        WORKING_DIRECTORY ${PROJECT_SOURCE_DIR} # we need the serialized test data for the integration test
+)

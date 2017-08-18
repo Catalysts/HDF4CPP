@@ -8,16 +8,20 @@
 #include <iostream>
 
 HdfDatasetItem::HdfDatasetItem(int32 id) : HdfItemBase(id) {
-    std::vector<int32> dims = getDims();
-    _size = 1;
-    std::for_each(dims.begin(), dims.end(), [this](const int32& t) {
-        _size *= t;
-    });
-    int32 dim[MAX_DIMENSION];
-    int32 size, nrAtt;
-    char _name[MAX_NAME_LENGTH];
-    SDgetinfo(id, _name, &size, dim, &dataType, &nrAtt);
-    name = std::string(_name);
+    if(id == FAIL) {
+        _size = FAIL;
+    } else {
+        std::vector<int32> dims = getDims();
+        _size = 1;
+        std::for_each(dims.begin(), dims.end(), [this](const int32 &t) {
+            _size *= t;
+        });
+        int32 dim[MAX_DIMENSION];
+        int32 size, nrAtt;
+        char _name[MAX_NAME_LENGTH];
+        SDgetinfo(id, _name, &size, dim, &dataType, &nrAtt);
+        name = std::string(_name);
+    }
 }
 std::vector<int32> HdfDatasetItem::getDims() {
     int32 dims[MAX_DIMENSION];
@@ -26,10 +30,14 @@ std::vector<int32> HdfDatasetItem::getDims() {
     SDgetinfo(id, name, &size, dims, &dataType, &nrAtt);
     return std::vector<int32>(dims, dims + size);
 }
-bool HdfDatasetItem::read(void *dest) {
-    std::vector<int32> end = getDims();
-    std::vector<int32> start(end.size(), 0);
-    return SDreaddata(id, start.data(), nullptr, end.data(), dest) != FAIL;
+bool HdfDatasetItem::read(void *dest, const std::vector<Range>& ranges) {
+    std::vector<int32> start, quantity, stride;
+    for(const auto& range : ranges) {
+        start.push_back(range.begin);
+        quantity.push_back(range.quantity);
+        stride.push_back(range.stride);
+    }
+    return SDreaddata(id, start.data(), stride.data(), quantity.data(), dest) != FAIL;
 }
 HdfAttribute HdfDatasetItem::getAttribute(const std::string &name) {
     return HdfAttribute(new HdfDatasetAttribute(id, name));
@@ -62,7 +70,7 @@ HdfGroupItem::HdfGroupItem(int32 id) : HdfItemBase(id) {
 std::vector<int32> HdfGroupItem::getDims() {
     throw std::runtime_error("HDF4CPP: getDims not defined for HdfGroupItem");
 }
-bool HdfGroupItem::read(void *) {
+bool HdfGroupItem::read(void *, const std::vector<Range>&) {
     throw std::runtime_error("HDF4CPP: read not defined for HdfGroupItem");
 }
 HdfAttribute HdfGroupItem::getAttribute(const std::string &name) {

@@ -101,6 +101,23 @@ TEST_F(HdfFileTest, ReadInvalidData) {
     ASSERT_FALSE(item.read(vec));
 }
 
+TEST_F(HdfFileTest, ReadDataInRange) {
+    {
+        HdfItem item = file.get("Data");
+        ASSERT_TRUE(item.isValid());
+        std::vector<int32> vec;
+        item.read(vec, std::vector<Range>({Range(0, 2), Range(1, 2)}));
+        ASSERT_EQ(vec, std::vector<int32>({2, 3, 5, 6}));
+    }
+    {
+        HdfItem item = file.get("DataWithAttributes");
+        ASSERT_TRUE(item.isValid());
+        std::vector<float32> vec;
+        item.read(vec, std::vector<Range>({Range(2, 1), Range(0, 2)}));
+        ASSERT_EQ(vec, std::vector<float32>({2.0, 2.1}));
+    }
+}
+
 TEST_F(HdfFileTest, ReadInvalidDatasetAttribute) {
     HdfItem item = file.get("Data");
     ASSERT_TRUE(item.isValid());

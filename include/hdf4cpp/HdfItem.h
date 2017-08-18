@@ -8,10 +8,24 @@
 #include <hdf4cpp/HdfDefines.h>
 #include <hdf4cpp/HdfAttribute.h>
 #include <iostream>
+#include <algorithm>
 #include <map>
 #include <memory>
 #include <vector>
 #include <hdf/hdf.h>
+
+
+struct Range {
+    int32 begin;
+    int32 quantity;
+    int32 stride;
+
+    Range(int32 begin = 0, int32 quantity = 0, int32 stride = 1) : begin(begin), quantity(quantity), stride(stride) {}
+
+    intn size() const {
+        return quantity / stride;
+    }
+};
 
 class HdfItemBase {
 public:
@@ -26,9 +40,22 @@ public:
     virtual std::vector<int32> getDims() = 0;
     virtual intn size() const = 0;
 
-    template <class T> bool read(std::vector<T> &dest) {
-        intn length = size();
-        if(length != FAIL) {
+    template <class T> bool read(std::vector<T> &dest, const std::vector<Range>& ranges) {
+        if(size() == FAIL) {
+            return false;
+        }
+        std::vector<int32> dims = getDims();
+        if(ranges.size() != dims.size()) {
+            throw std::runtime_error("HDF4CPP: incorrect number of ranges");
+        }
+        intn length = 1;
+        for(int i = 0; i < dims.size(); ++i) {
+            if(ranges[i].begin < 0 || ranges[i].begin >= dims[i] || ranges[i].quantity < 0 || ranges[i].begin + ranges[i].quantity > dims[i] || ranges[i].stride <= 0) {
+                throw std::runtime_error("HDF4CPP: incorrect range");
+            }
+            length *= ranges[i].size();
+        }
+        if(length > 0) {
             auto it = typeSizeMap.find(getDataType());
             if(it != typeSizeMap.end()) {
                 if(it->second != sizeof(T)) {
@@ -38,10 +65,19 @@ public:
                 throw std::runtime_error("HDF4CPP: hdf data set type not supported");
             }
             dest.resize(length);
-            return read(dest.data());
+            return read(dest.data(), ranges);
         } else {
             return false;
         }
+    }
+
+    template <class T> bool read(std::vector<T> &dest) {
+        std::vector<int32> dims = getDims();
+        std::vector<Range> ranges(dims.size());
+        std::transform(dims.begin(), dims.end(), ranges.begin(), [](const int32& t) {
+            return Range(0, t);
+        });
+        return read(dest, ranges);
     }
 
     virtual HdfAttribute getAttribute(const std::string& name) = 0;
@@ -49,7 +85,7 @@ public:
 protected:
     int32 id;
 
-    virtual bool read(void *dest) = 0;
+    virtual bool read(void *dest, const std::vector<Range>& ranges) = 0;
     virtual int32 getDataType() const = 0;
 };
 
@@ -70,7 +106,7 @@ private:
     int32 dataType;
     std::string name;
 
-    bool read(void *dest);
+    bool read(void *dest, const std::vector<Range>& ranges);
     int32 getDataType() const;
 };
 
@@ -90,7 +126,7 @@ public:
 private:
     std::string name;
 
-    bool read(void *dest);
+    bool read(void *dest, const std::vector<Range>& ranges);
     int32 getDataType() const;
 };
 
@@ -106,6 +142,14 @@ public:
     std::vector<int32> getDims();
     intn size() const;
     HdfAttribute getAttribute(const std::string& name);
+
+    template <class T> bool read(std::vector<T> &dest, const std::vector<Range>& ranges) {
+        if(isValid()) {
+            return item->read(dest, ranges);
+        } else {
+            return false;
+        }
+    }
 
     template <class T> bool read(std::vector<T> &dest) {
         if(isValid()) {

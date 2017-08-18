@@ -14,6 +14,10 @@ HdfFile::HdfFile(const std::string& path) {
     sId = SDstart(path.c_str(), DFACC_READ);
     vId = Hopen(path.c_str(), DFACC_READ, 0);
     Vstart(vId);
+
+    loneSize = Vlone(vId, nullptr, 0);
+    loneRefs.resize((size_t) loneSize);
+    Vlone(vId, loneRefs.data(), loneSize);
 }
 HdfFile::~HdfFile() {
     SDend(sId);
@@ -91,14 +95,14 @@ HdfAttribute HdfFile::getAttribute(const std::string &name) {
 bool HdfFile::isValid() {
     return sId != FAIL || vId != FAIL;
 }
-HdfItem::Iterator HdfFile::begin() const {
-    return HdfItem::Iterator(sId, vId, vId, 0);
+HdfFile::Iterator HdfFile::begin() const {
+    return Iterator(this, 0);
 }
-HdfItem::Iterator HdfFile::end() const {
-    // FIXME get the number of items in the root
-    int32 size = Vntagrefs(vId);
+HdfFile::Iterator HdfFile::end() const {
+    int32 size;
+    size = Vlone(vId, nullptr, 0);
     if(size == FAIL) {
         size = 0;
     }
-    return HdfItem::Iterator(sId, vId, vId, size);
+    return Iterator(this, size);
 }

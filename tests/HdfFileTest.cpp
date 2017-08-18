@@ -9,6 +9,20 @@ class HdfFileTest : public ::testing::Test {
 protected:
     HdfFileTest() : file(std::string(TEST_DATA_PATH) + "small_test.hdf") {}
 
+    void writeOut(const HdfItem& item, std::ostream& out, const std::string& tab = std::string()) {
+        if(!item.isValid()) return;
+        out << tab << item.getName() << '\n';
+        for(const auto& it : item) {
+            writeOut(it, out, tab + "\t");
+        }
+    }
+
+    void writeOut(const HdfFile& file, std::ostream& out) {
+        for(const auto& it : file) {
+            writeOut(it, out);
+        }
+    }
+
     HdfFile file;
 };
 
@@ -152,10 +166,31 @@ TEST_F(HdfFileTest, GlobalAttribute) {
     ASSERT_EQ(vec, std::vector<int8>({11, 22}));
 }
 
-TEST_F(HdfFileTest, DISABLED_ItemIterator1) {
+TEST_F(HdfFileTest, ItemIterator1) {
     std::ostringstream out;
     for(auto it : file) {
         out << it.getName() << '*';
     }
-    ASSERT_EQ(out.str(), std::string("Group*GroupWithOnlyAttributes*DoubleDataset*DoubleDataset*"));
+    ASSERT_EQ(out.str(), std::string("Group*GroupWithOnlyAttribute*RIG0.0*/home/patrik/HDF4CPP/tests/test_data/small_test.hdf*"));
+}
+
+TEST_F(HdfFileTest, ItemIterator2) {
+    HdfItem item = file.get("Group");
+    ASSERT_TRUE(item.isValid());
+    std::ostringstream out;
+    for(auto it : item) {
+        out << it.getName() << '*';
+    }
+    ASSERT_EQ(out.str(), "Data*DataWithAttributes*");
+}
+
+TEST_F(HdfFileTest, ItemIterator3) {
+    auto it = file.begin();
+    HdfItem item = *it;
+    ASSERT_EQ(item.getName(), "Group");
+}
+
+TEST_F(HdfFileTest, HiddenGroup) {
+    HdfItem item = file.get("RIG0.0");
+    ASSERT_TRUE(item.isValid());
 }

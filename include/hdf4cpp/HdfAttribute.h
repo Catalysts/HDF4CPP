@@ -79,6 +79,20 @@ private:
     int32 getDataType() const;
 };
 
+class HdfDataAttribute : public HdfAttributeBase {
+public:
+    HdfDataAttribute(int32 id, const std::string& name);
+    Type getType() const;
+
+    intn size() const;
+
+private:
+    intn _size;
+    int32 dataType;
+    bool get(void *dest);
+    int32 getDataType() const;
+};
+
 class HdfAttribute {
 public:
     HdfAttribute(HdfAttributeBase *attribute) : attribute(attribute) {}

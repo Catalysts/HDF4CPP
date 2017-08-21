@@ -99,6 +99,9 @@ hdf4cpp::HdfDataItem::~HdfDataItem() {
         Vdetach(id);
     }
 }
+hdf4cpp::HdfAttribute hdf4cpp::HdfDataItem::getAttribute(const std::string &name) {
+    return HdfAttribute(new HdfDataAttribute(id, name));
+}
 hdf4cpp::Type hdf4cpp::HdfDataItem::getType() const {
     return VDATA;
 }

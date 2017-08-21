@@ -66,6 +66,28 @@ int32 hdf4cpp::HdfGroupAttribute::getDataType() const {
 bool hdf4cpp::HdfGroupAttribute::get(void *dest) {
     return Vgetattr2(id, index, dest) != FAIL;
 }
+hdf4cpp::HdfDataAttribute::HdfDataAttribute(int32 id, const std::string &name) : HdfAttributeBase(id, VSfindattr(id, _HDF_VDATA, name.c_str())) {
+    if(index != FAIL) {
+        int32 nrBytes;
+        char _name[MAX_NAME_LENGTH];
+        VSattrinfo(id, _HDF_VDATA, index, _name, &dataType, &_size, &nrBytes);
+    } else {
+        dataType = 0;
+        _size = FAIL;
+    }
+}
+hdf4cpp::Type hdf4cpp::HdfDataAttribute::getType() const {
+    return VDATA;
+}
+intn hdf4cpp::HdfDataAttribute::size() const {
+    return _size;
+}
+bool hdf4cpp::HdfDataAttribute::get(void *dest) {
+    return VSgetattr(id, _HDF_VDATA, index, dest) != FAIL;
+}
+int32 hdf4cpp::HdfDataAttribute::getDataType() const {
+    return dataType;
+}
 hdf4cpp::HdfAttribute::HdfAttribute(HdfAttribute &&other) : attribute(std::move(other.attribute)) {
 }
 bool hdf4cpp::HdfAttribute::isValid() const {

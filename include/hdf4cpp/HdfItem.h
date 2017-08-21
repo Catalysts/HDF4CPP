@@ -210,7 +210,7 @@ public:
 
     intn size() const;
 
-    HdfAttribute getAttribute(const std::string &name) {}
+    HdfAttribute getAttribute(const std::string &name);
 
     template<class T>
     bool read(std::vector<T> &dest, const std::string &field, int32 records) {

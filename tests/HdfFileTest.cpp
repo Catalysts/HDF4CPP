@@ -9,9 +9,7 @@ using namespace hdf4cpp;
 
 class HdfFileTest : public ::testing::Test {
 protected:
-    HdfFileTest() : file(std::string(TEST_DATA_PATH) + "small_test.hdf"),
-                    fileModis("/home/patrik/test_data/modis/MOD021KM.A2008002.0000.006.2014221053223.hdf"),
-                    fileNew("/home/patrik/CLionProjects/Python-scripts/scripts/small_test.hdf") {}
+    HdfFileTest() : file(std::string(TEST_DATA_PATH) + "small_test.hdf") {}
 
     void writeOut(const HdfItem& item, std::ostream& out, const std::string& tab = std::string()) {
         if(!item.isValid()) return;
@@ -28,8 +26,6 @@ protected:
     }
 
     HdfFile file;
-    HdfFile fileModis;
-    HdfFile fileNew;
 };
 
 TEST_F(HdfFileTest, FileValidity) {
@@ -218,8 +214,7 @@ TEST_F(HdfFileTest, HiddenGroup) {
     ASSERT_TRUE(item.isValid());
 }
 
-TEST_F(HdfFileTest, VDataRead) {
-    ASSERT_TRUE(file.isValid());
+TEST_F(HdfFileTest, VDataRead1) {
     HdfItem item = file.get("Vdata");
     ASSERT_TRUE(item.isValid());
     std::vector<int32> vec;
@@ -227,8 +222,7 @@ TEST_F(HdfFileTest, VDataRead) {
     ASSERT_EQ(vec, std::vector<int32>({39, 19, 55}));
 }
 
-TEST_F(HdfFileTest, VDataRead1) {
-    ASSERT_TRUE(file.isValid());
+TEST_F(HdfFileTest, VDataRead2) {
     HdfItem item = file.get("Vdata");
     ASSERT_TRUE(item.isValid());
     std::vector<std::vector<char> > vec;
@@ -238,4 +232,14 @@ TEST_F(HdfFileTest, VDataRead1) {
     for(int i = 0; i < 3; ++i) {
         ASSERT_EQ(std::string(vec[i].data()), exp[i]);
     }
+}
+
+TEST_F(HdfFileTest, VDataAttributes) {
+    HdfItem item = file.get("Vdata");
+    ASSERT_TRUE(item.isValid());
+    HdfAttribute attribute = item.getAttribute("attribute");
+    ASSERT_TRUE(attribute.isValid());
+    std::vector<int32> vec;
+    ASSERT_TRUE(attribute.get(vec));
+    ASSERT_EQ(vec, std::vector<int32>({1, 2, 3, 3, 2, 1}));
 }

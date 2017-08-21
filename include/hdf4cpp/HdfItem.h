@@ -14,6 +14,7 @@
 #include <vector>
 #include <hdf/hdf.h>
 
+namespace hdf4cpp {
 
 struct Range {
     int32 begin;
@@ -23,7 +24,24 @@ struct Range {
     Range(int32 begin = 0, int32 quantity = 0, int32 stride = 1) : begin(begin), quantity(quantity), stride(stride) {}
 
     intn size() const {
+        if(!stride) {
+            return FAIL;
+        }
         return quantity / stride;
+    }
+
+    bool check(const int32& dim) const {
+        return begin >= 0 ||
+               begin < dim ||
+               quantity >= 0 ||
+               begin + quantity <= dim ||
+               stride > 0;
+    }
+
+    static void fill(std::vector<Range>& ranges, const std::vector<int32>& dims) {
+        for(int i = ranges.size(); i < dims.size(); ++i) {
+            ranges.push_back(Range(0, dims[i]));
+        }
     }
 };
 
@@ -65,7 +83,7 @@ public:
                 throw std::runtime_error("HDF4CPP: hdf data set type not supported");
             }
             dest.resize(length);
-            return read(dest.data(), ranges);
+            return read(dest, ranges);
         } else {
             return false;
         }
@@ -85,7 +103,6 @@ public:
 protected:
     int32 id;
 
-    virtual bool read(void *dest, const std::vector<Range>& ranges) = 0;
     virtual int32 getDataType() const = 0;
 };
 
@@ -101,12 +118,60 @@ public:
     intn size() const;
     HdfAttribute getAttribute(const std::string& name);
 
+    template <class T> bool read(std::vector<T>& dest, std::vector<Range>& ranges) {
+        if(_size == FAIL) {
+            return false;
+        }
+        if(!isValid()) {
+            return false;
+        }
+        std::vector<int32> dims = getDims();
+        Range::fill(ranges, dims);
+        intn length = 1;
+        for(int i = 0; i < ranges.size(); ++i) {
+            if(!ranges[i].check(dims[i])) {
+                return false;
+                // TODO or throw exception (ask Moritz)
+            }
+            length *= ranges[i].size();
+        }
+        if(length > 0) {
+            // TODO try with the new size getter hdf function
+            auto it = typeSizeMap.find(getDataType());
+            if(it != typeSizeMap.end()) {
+                if(it->second != sizeof(T)) {
+                    throw std::runtime_error("HDF4CPP: type size missmatch");
+                }
+            } else {
+                throw std::runtime_error("HDF4CPP: hdf data type not supported");
+            }
+            dest.resize(length);
+            std::vector<int32> start, quantity, stride;
+            for(const auto& range : ranges) {
+                start.push_back(range.begin);
+                quantity.push_back(range.quantity);
+                stride.push_back(range.stride);
+            }
+            return SDreaddata(id, start.data(), stride.data(), quantity.data(), dest.data()) != FAIL;
+        } else {
+            return false;
+        }
+    }
+
+    template <class T> bool read(std::vector<T>& dest) {
+        std::vector<int32> dims = getDims();
+        std::vector<Range> ranges;
+        for(const auto& dim : dims) {
+            ranges.push_back(Range(0, dim));
+        }
+        return read(dest, ranges);
+    }
+
 private:
     intn _size;
     int32 dataType;
     std::string name;
 
-    bool read(void *dest, const std::vector<Range>& ranges);
     int32 getDataType() const;
 };
 
@@ -126,7 +191,107 @@ public:
 private:
     std::string name;
 
-    bool read(void *dest, const std::vector<Range>& ranges);
+    int32 getDataType() const;
+};
+
+class HdfDataItem : public HdfItemBase {
+public:
+    HdfDataItem(int32 id);
+
+    ~HdfDataItem();
+
+    Type getType() const;
+
+    int32 getId() const;
+
+    std::string getName() const;
+
+    std::vector<int32> getDims();
+
+    intn size() const;
+
+    HdfAttribute getAttribute(const std::string &name) {}
+
+    template<class T>
+    bool read(std::vector<T> &dest, const std::string &field, int32 records) {
+        if (!records) {
+            records = nrRecords;
+        }
+
+        if (VSsetfields(id, field.c_str()) == FAIL) {
+            return false;
+        }
+
+        int32 fieldSize = VSsizeof(id, (char *) field.c_str());
+        if (sizeof(T) < fieldSize) {
+            throw std::runtime_error(
+                    "HDF4CPP: the size of the destination type is less than the size of the field type");
+        }
+
+        size_t size = records * fieldSize;
+        std::vector<uint8> buff(size);
+        if (VSread(id, buff.data(), records, interlace) == FAIL) {
+            return false;
+        }
+
+        dest.resize(records);
+        VOIDP buffptrs[1];
+        buffptrs[0] = dest.data();
+        if (VSfpack(id, _HDF_VSUNPACK, field.c_str(), buff.data(), size, records, field.c_str(), buffptrs) == FAIL) {
+            return false;
+        }
+        return true;
+    }
+
+
+    template <class T> bool read(std::vector<std::vector<T> >& dest, const std::string& field, int32 records) {
+        if(!records) {
+            records = nrRecords;
+        }
+
+        if(VSsetfields(id, field.c_str()) == FAIL) {
+            return false;
+        }
+
+        int32 fieldSize = VSsizeof(id, (char *) field.c_str());
+        if(fieldSize % sizeof(T) != 0) {
+            throw std::runtime_error("HDF4CPP: the size of the destination type is less than the size of the field type");
+        }
+
+        size_t size = records * fieldSize;
+        std::vector<uint8> buff(size);
+        if(VSread(id, buff.data(), records, interlace) == FAIL) {
+            return false;
+        }
+
+        int32 divided = fieldSize / sizeof(T);
+        dest.resize(records, std::vector<T>(divided));
+        std::vector<T> linearDest(records * divided);
+        VOIDP buffptrs[1];
+        buffptrs[0] = linearDest.data();
+        VSfpack(id, _HDF_VSUNPACK, field.c_str(), buff.data(), size, records, field.c_str(), buffptrs);
+        int i = 0;
+        int j;
+        while(i < records) {
+            j = 0;
+            while(j < divided) {
+                dest[i][j] = linearDest[i * divided + j];
+                ++j;
+            }
+            ++i;
+        }
+        return true;
+    }
+
+private:
+    intn _size;
+    std::string name;
+
+    int32 nrRecords;
+    int32 interlace;
+    int32 recordSize;
+    std::vector<std::string> fieldNames;
+
     int32 getDataType() const;
 };
 
@@ -143,19 +308,52 @@ public:
     intn size() const;
     HdfAttribute getAttribute(const std::string& name);
 
-    template <class T> bool read(std::vector<T> &dest, const std::vector<Range>& ranges) {
-        if(isValid()) {
-            return item->read(dest, ranges);
-        } else {
+    template <class T> bool read(std::vector<T>& dest) {
+        if(!isValid()) {
             return false;
+        }
+
+        switch(item->getType()) {
+            case SDATA: {
+                HdfDatasetItem *dItem = dynamic_cast<HdfDatasetItem *>(item.get());
+                return dItem->read(dest);
+            }
+            case VGROUP: {
+                HdfGroupItem *gItem = dynamic_cast<HdfGroupItem *>(item.get());
+                return gItem->read(dest);
+            }
+            default:
+                return false;
         }
     }
 
-    template <class T> bool read(std::vector<T> &dest) {
-        if(isValid()) {
-            return item->read(dest);
-        } else {
+    template <class T> bool read(std::vector<T>& dest, std::vector<Range> ranges) {
+        if(!isValid()) {
             return false;
+        }
+
+        switch(item->getType()) {
+            case SDATA: {
+                HdfDatasetItem *dItem = dynamic_cast<HdfDatasetItem *>(item.get());
+                return dItem->read(dest, ranges);
+            }
+            default:
+                return false;
+        }
+    }
+
+    template <class T> bool read(std::vector<T>& dest, const std::string& field, int32 records = 0) {
+        if(!isValid()) {
+            return false;
+        }
+
+        switch(item->getType()) {
+            case VDATA: {
+                HdfDataItem *vItem = dynamic_cast<HdfDataItem*>(item.get());
+                return vItem->read(dest, field, records);
+            }
+            default:
+                return false;
         }
     }
 
@@ -223,5 +421,7 @@ private:
 
     int32 index;
 };
+
+}
 
 #endif //HDF4CPP_HDFITEM_H

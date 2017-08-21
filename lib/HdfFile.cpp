@@ -10,7 +10,7 @@
 
 
 
-HdfFile::HdfFile(const std::string& path) {
+hdf4cpp::HdfFile::HdfFile(const std::string& path) {
     sId = SDstart(path.c_str(), DFACC_READ);
     vId = Hopen(path.c_str(), DFACC_READ, 0);
     Vstart(vId);
@@ -19,31 +19,39 @@ HdfFile::HdfFile(const std::string& path) {
     loneRefs.resize((size_t) loneSize);
     Vlone(vId, loneRefs.data(), loneSize);
 }
-HdfFile::~HdfFile() {
+hdf4cpp::HdfFile::~HdfFile() {
     SDend(sId);
     Vend(vId);
     Hclose(vId);
 }
-int32 HdfFile::getDatasetId(const std::string &name) {
+int32 hdf4cpp::HdfFile::getDatasetId(const std::string &name) {
     int32 index = SDnametoindex(sId, name.c_str());
     return (index == FAIL) ? (FAIL) : (SDselect(sId, index));
 }
-int32 HdfFile::getGroupId(const std::string &name) {
+int32 hdf4cpp::HdfFile::getGroupId(const std::string &name) {
     int32 ref = Vfind(vId, name.c_str());
     return (!ref) ? (FAIL) : (Vattach(vId, ref, "r"));
 }
-HdfItem HdfFile::get(const std::string& name) {
+int32 hdf4cpp::HdfFile::getDataId(const std::string &name) {
+    int32 ref = VSfind(vId, name.c_str());
+    return (!ref) ? (FAIL) : (VSattach(vId, ref, "r"));
+}
+hdf4cpp::HdfItem hdf4cpp::HdfFile::get(const std::string& name) {
     int32 id = getDatasetId(name);
     if(id == FAIL) {
         id = getGroupId(name);
         if(id == FAIL) {
-            return HdfItem(nullptr, sId, vId);
+            id = getDataId(name);
+            if(id == FAIL) {
+                return HdfItem(nullptr, sId, vId);
+            }
+            return HdfItem(new HdfDataItem(id), sId, vId);
         }
         return HdfItem(new HdfGroupItem(id), sId, vId);
     }
     return HdfItem(new HdfDatasetItem(id), sId, vId);
 }
-std::vector<int32> HdfFile::getDatasetIds(const std::string &name) {
+std::vector<int32> hdf4cpp::HdfFile::getDatasetIds(const std::string &name) {
     std::vector<int32> ids;
     char nameDataset[MAX_NAME_LENGTH];
     int32 datasets, attrs;
@@ -60,7 +68,7 @@ std::vector<int32> HdfFile::getDatasetIds(const std::string &name) {
     }
     return ids;
 }
-std::vector<int32> HdfFile::getGroupIds(const std::string &name) {
+std::vector<int32> hdf4cpp::HdfFile::getGroupIds(const std::string &name) {
     std::vector<int32> ids;
     char nameGroup[MAX_NAME_LENGTH];
     int32 ref = Vgetid(vId, -1);
@@ -76,7 +84,7 @@ std::vector<int32> HdfFile::getGroupIds(const std::string &name) {
     }
     return ids;
 }
-std::vector<HdfItem> HdfFile::getAll(const std::string& name) {
+std::vector<hdf4cpp::HdfItem> hdf4cpp::HdfFile::getAll(const std::string& name) {
     std::vector<HdfItem> items;
     std::vector<int32> ids;
     ids = getDatasetIds(name);
@@ -89,16 +97,16 @@ std::vector<HdfItem> HdfFile::getAll(const std::string& name) {
     }
     return std::move(items);
 }
-HdfAttribute HdfFile::getAttribute(const std::string &name) {
+hdf4cpp::HdfAttribute hdf4cpp::HdfFile::getAttribute(const std::string &name) {
     return HdfAttribute(new HdfDatasetAttribute(sId, name));
 }
-bool HdfFile::isValid() {
+bool hdf4cpp::HdfFile::isValid() {
     return sId != FAIL || vId != FAIL;
 }
-HdfFile::Iterator HdfFile::begin() const {
+hdf4cpp::HdfFile::Iterator hdf4cpp::HdfFile::begin() const {
     return Iterator(this, 0);
 }
-HdfFile::Iterator HdfFile::end() const {
+hdf4cpp::HdfFile::Iterator hdf4cpp::HdfFile::end() const {
     int32 size;
     size = Vlone(vId, nullptr, 0);
     if(size == FAIL) {

@@ -11,7 +11,7 @@
 #include <hdf4cpp/HdfItem.h>
 #include <hdf4cpp/HdfAttribute.h>
 
-
+namespace hdf4cpp {
 
 class HdfFile {
   public:
@@ -32,9 +32,11 @@ class HdfFile {
   private:
     int32 getDatasetId(const std::string& name);
     int32 getGroupId(const std::string& name);
+    int32 getDataId(const std::string& name);
 
     std::vector<int32> getDatasetIds(const std::string& name);
     std::vector<int32> getGroupIds(const std::string& name);
+    std::vector<int32> getDataIds(const std::string& name);
 
     int32 sId;
     int32 vId;
@@ -81,5 +83,7 @@ private:
     const HdfFile *file;
     int32 index;
 };
+
+}
 
 #endif //GRASP_SEGMENTER_HDFFILE_H

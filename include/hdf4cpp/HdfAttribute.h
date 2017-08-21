@@ -12,6 +12,8 @@
 #include <map>
 #include <memory>
 
+namespace hdf4cpp {
+
 class HdfAttributeBase {
 public:
     HdfAttributeBase(int32 id, int32 index) : id(id), index(index) {}
@@ -97,5 +99,7 @@ public:
 private:
     std::unique_ptr<HdfAttributeBase> attribute;
 };
+
+}
 
 #endif //HDF4CPP_HDFATTRIBUTE_H

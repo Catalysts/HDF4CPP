@@ -11,7 +11,9 @@
 #define MAX_DIMENSION 32
 #define MAX_NAME_LENGTH 100
 
-enum Type {DATASET, GROUP, NONE};
+namespace hdf4cpp {
+
+enum Type {SDATA, VGROUP, VDATA, NONE};
 
 const std::multimap<int32, int32> typeSizeMap = {
         {DFNT_CHAR, SIZE_CHAR},
@@ -32,5 +34,7 @@ const std::multimap<int32, int32> typeSizeMap = {
         {DFNT_UCHAR8, SIZE_UCHAR8},
         {DFNT_UCHAR16, SIZE_UCHAR16},
 };
+
+}
 
 #endif //HDF4CPP_HDFDEFINES_H

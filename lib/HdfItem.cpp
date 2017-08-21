@@ -96,7 +96,7 @@ hdf4cpp::HdfDataItem::HdfDataItem(int32 id) : HdfItemBase(id) {
 }
 hdf4cpp::HdfDataItem::~HdfDataItem() {
     if(isValid()) {
-        Vdetach(id);
+        VSdetach(id);
     }
 }
 hdf4cpp::HdfAttribute hdf4cpp::HdfDataItem::getAttribute(const std::string &name) {

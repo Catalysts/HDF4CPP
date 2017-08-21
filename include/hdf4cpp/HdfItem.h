@@ -404,7 +404,8 @@ public:
             throw std::runtime_error("HDF4CPP: cannot access invalid item");
         }
         if(Visvs(key, ref)) {
-            throw std::runtime_error("HDF4CPP: vdata not supported yet");
+            int32 id = VSattach(vId, ref, "r");
+            return HdfItem(new HdfDataItem(id), sId, vId);
         } else if(Visvg(key, ref)) {
             int32 id = Vattach(vId, ref, "r");
             return HdfItem(new HdfGroupItem(id), sId, vId);

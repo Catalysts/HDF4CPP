@@ -15,9 +15,19 @@ hdf4cpp::HdfFile::HdfFile(const std::string& path) {
     vId = Hopen(path.c_str(), DFACC_READ, 0);
     Vstart(vId);
 
-    loneSize = Vlone(vId, nullptr, 0);
-    loneRefs.resize((size_t) loneSize);
-    Vlone(vId, loneRefs.data(), loneSize);
+    int32 loneSize = Vlone(vId, nullptr, 0);
+    std::vector<int32> refs((size_t) loneSize);
+    Vlone(vId, refs.data(), loneSize);
+    for(const auto& ref : refs) {
+        loneRefs.push_back(std::pair<int32, Type>(ref, VGROUP));
+    }
+
+    int32 loneVdata = VSlone(vId, nullptr, 0);
+    refs.resize((size_t) loneVdata);
+    VSlone(vId, refs.data(), loneVdata);
+    for(const auto& ref : refs) {
+        loneRefs.push_back(std::pair<int32, Type>(ref, VDATA));
+    }
 }
 hdf4cpp::HdfFile::~HdfFile() {
     SDend(sId);
@@ -107,10 +117,5 @@ hdf4cpp::HdfFile::Iterator hdf4cpp::HdfFile::begin() const {
     return Iterator(this, 0);
 }
 hdf4cpp::HdfFile::Iterator hdf4cpp::HdfFile::end() const {
-    int32 size;
-    size = Vlone(vId, nullptr, 0);
-    if(size == FAIL) {
-        size = 0;
-    }
-    return Iterator(this, size);
+    return Iterator(this, (int32) loneRefs.size());
 }

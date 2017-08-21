@@ -41,8 +41,7 @@ class HdfFile {
     int32 sId;
     int32 vId;
 
-    int32 loneSize;
-    std::vector<int32> loneRefs;
+    std::vector<std::pair<int32, Type> > loneRefs;
 };
 
 class HdfFile::Iterator : public std::iterator<std::bidirectional_iterator_tag, HdfItem> {
@@ -72,12 +71,23 @@ public:
     }
 
     HdfItem operator*() {
-        if(index < 0 || index >= file->loneSize) {
+        if(index < 0 || index >= file->loneRefs.size()) {
             throw std::runtime_error("HDF4CPP: cannot access invalid item");
         }
-        int32 ref = file->loneRefs[index];
-        int32 id = Vattach(file->vId, file->loneRefs[index], "r");
-        return HdfItem(new HdfGroupItem(id), file->sId, file->vId);
+        int32 ref = file->loneRefs[index].first;
+        switch(file->loneRefs[index].second) {
+            case VGROUP: {
+                int32 id = Vattach(file->vId, ref, "r");
+                return HdfItem(new HdfGroupItem(id), file->sId, file->vId);
+            }
+            case VDATA: {
+                int32 id = VSattach(file->vId, ref, "r");
+                return HdfItem(new HdfDataItem(id), file->sId, file->vId);
+            }
+            default: {
+                return HdfItem(nullptr, file->sId, file->vId);
+            }
+        }
     }
 private:
     const HdfFile *file;

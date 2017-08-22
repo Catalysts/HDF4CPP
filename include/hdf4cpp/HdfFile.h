@@ -19,6 +19,8 @@ class HdfFile {
     ~HdfFile();
     bool isValid();
 
+    explicit operator bool() { return isValid(); }
+
     HdfItem get(const std::string& name);
     std::vector<HdfItem> getAll(const std::string& name);
 

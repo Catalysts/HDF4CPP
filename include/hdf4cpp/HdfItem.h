@@ -52,6 +52,7 @@ public:
     virtual ~HdfItemBase() {}
     virtual bool isValid() const { return id != FAIL; }
 
+
     virtual Type getType() const = 0;
     virtual int32 getId() const = 0;
     virtual std::string getName() const = 0;
@@ -301,6 +302,7 @@ public:
     HdfItem(const HdfItem& item) = delete;
     HdfItem(HdfItem&& item);
     bool isValid() const;
+    explicit operator bool() { return isValid(); }
 
     Type getType() const;
     std::string getName() const;

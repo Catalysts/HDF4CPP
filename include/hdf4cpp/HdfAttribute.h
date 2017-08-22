@@ -99,6 +99,7 @@ public:
     HdfAttribute(const HdfAttribute&) = delete;
     HdfAttribute(HdfAttribute&& attribute);
     bool isValid() const;
+    explicit operator bool() { return isValid(); }
     Type getType() const;
 
     intn size() const;

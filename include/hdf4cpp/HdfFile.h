@@ -16,6 +16,10 @@ namespace hdf4cpp {
 class HdfFile {
   public:
     HdfFile(const std::string& path);
+    HdfFile(const HdfFile& file) = delete;
+    HdfFile(HdfFile&& file);
+    HdfFile& operator=(const HdfFile& file) = delete;
+    HdfFile& operator=(HdfFile&& file);
     ~HdfFile();
     bool isValid();
 
@@ -32,6 +36,8 @@ class HdfFile {
     Iterator end() const;
 
   private:
+    void destroy();
+
     int32 getDatasetId(const std::string& name);
     int32 getGroupId(const std::string& name);
     int32 getDataId(const std::string& name);

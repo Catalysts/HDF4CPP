@@ -301,6 +301,8 @@ public:
     HdfItem(HdfItemBase *item, int32 sId, int32 vId) : item(item), sId(sId), vId(vId) {}
     HdfItem(const HdfItem& item) = delete;
     HdfItem(HdfItem&& item);
+    HdfItem& operator=(const HdfItem& item) = delete;
+    HdfItem& operator=(HdfItem&& it);
     bool isValid() const;
     explicit operator bool() { return isValid(); }
 

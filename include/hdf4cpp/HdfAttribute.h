@@ -97,7 +97,10 @@ class HdfAttribute {
 public:
     HdfAttribute(HdfAttributeBase *attribute) : attribute(attribute) {}
     HdfAttribute(const HdfAttribute&) = delete;
-    HdfAttribute(HdfAttribute&& attribute);
+    HdfAttribute(HdfAttribute&& attr);
+    HdfAttribute& operator=(const HdfAttribute& attribute) = delete;
+    HdfAttribute& operator=(HdfAttribute&& attribute);
+
     bool isValid() const;
     explicit operator bool() { return isValid(); }
     Type getType() const;

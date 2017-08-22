@@ -90,6 +90,10 @@ int32 hdf4cpp::HdfDataAttribute::getDataType() const {
 }
 hdf4cpp::HdfAttribute::HdfAttribute(HdfAttribute &&other) : attribute(std::move(other.attribute)) {
 }
+hdf4cpp::HdfAttribute& hdf4cpp::HdfAttribute::operator=(HdfAttribute&& attr) {
+    attribute = std::move(attr.attribute);\
+    return *this;
+}
 bool hdf4cpp::HdfAttribute::isValid() const {
     return attribute && attribute->isValid();
 }

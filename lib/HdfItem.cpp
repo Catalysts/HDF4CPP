@@ -125,6 +125,10 @@ int32 hdf4cpp::HdfDataItem::getDataType() const {
 }
 hdf4cpp::HdfItem::HdfItem(HdfItem&& other) : item(std::move(other.item)), sId(other.sId), vId(other.vId) {
 }
+hdf4cpp::HdfItem& hdf4cpp::HdfItem::operator=(HdfItem&& it) {
+    item = std::move(it.item);
+    return *this;
+}
 std::vector<int32> hdf4cpp::HdfItem::getDims() {
     if(isValid()) {
         return item->getDims();

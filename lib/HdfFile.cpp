@@ -29,10 +29,29 @@ hdf4cpp::HdfFile::HdfFile(const std::string& path) {
         loneRefs.push_back(std::pair<int32, Type>(ref, VDATA));
     }
 }
-hdf4cpp::HdfFile::~HdfFile() {
+hdf4cpp::HdfFile::HdfFile(HdfFile&& file) {
+    sId = file.sId;
+    vId = file.vId;
+    loneRefs = file.loneRefs;
+    file.sId = file.vId = FAIL;
+    loneRefs.clear();
+}
+hdf4cpp::HdfFile& hdf4cpp::HdfFile::operator=(HdfFile&& file) {
+    destroy();
+    sId = file.sId;
+    vId = file.vId;
+    loneRefs = file.loneRefs;
+    file.sId = file.vId = FAIL;
+    loneRefs.clear();
+    return *this;
+}
+void hdf4cpp::HdfFile::destroy() {
     SDend(sId);
     Vend(vId);
     Hclose(vId);
+}
+hdf4cpp::HdfFile::~HdfFile() {
+    destroy();
 }
 int32 hdf4cpp::HdfFile::getDatasetId(const std::string &name) {
     int32 index = SDnametoindex(sId, name.c_str());

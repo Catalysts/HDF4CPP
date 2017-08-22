@@ -53,19 +53,19 @@ void hdf4cpp::HdfFile::destroy() {
 hdf4cpp::HdfFile::~HdfFile() {
     destroy();
 }
-int32 hdf4cpp::HdfFile::getDatasetId(const std::string &name) {
+int32 hdf4cpp::HdfFile::getDatasetId(const std::string &name) const {
     int32 index = SDnametoindex(sId, name.c_str());
     return (index == FAIL) ? (FAIL) : (SDselect(sId, index));
 }
-int32 hdf4cpp::HdfFile::getGroupId(const std::string &name) {
+int32 hdf4cpp::HdfFile::getGroupId(const std::string &name) const {
     int32 ref = Vfind(vId, name.c_str());
     return (!ref) ? (FAIL) : (Vattach(vId, ref, "r"));
 }
-int32 hdf4cpp::HdfFile::getDataId(const std::string &name) {
+int32 hdf4cpp::HdfFile::getDataId(const std::string &name) const {
     int32 ref = VSfind(vId, name.c_str());
     return (!ref) ? (FAIL) : (VSattach(vId, ref, "r"));
 }
-hdf4cpp::HdfItem hdf4cpp::HdfFile::get(const std::string& name) {
+hdf4cpp::HdfItem hdf4cpp::HdfFile::get(const std::string& name) const {
     int32 id = getDatasetId(name);
     if(id == FAIL) {
         id = getGroupId(name);
@@ -80,7 +80,7 @@ hdf4cpp::HdfItem hdf4cpp::HdfFile::get(const std::string& name) {
     }
     return HdfItem(new HdfDatasetItem(id), sId, vId);
 }
-std::vector<int32> hdf4cpp::HdfFile::getDatasetIds(const std::string &name) {
+std::vector<int32> hdf4cpp::HdfFile::getDatasetIds(const std::string &name) const {
     std::vector<int32> ids;
     char nameDataset[MAX_NAME_LENGTH];
     int32 datasets, attrs;
@@ -97,7 +97,7 @@ std::vector<int32> hdf4cpp::HdfFile::getDatasetIds(const std::string &name) {
     }
     return ids;
 }
-std::vector<int32> hdf4cpp::HdfFile::getGroupIds(const std::string &name) {
+std::vector<int32> hdf4cpp::HdfFile::getGroupIds(const std::string &name) const {
     std::vector<int32> ids;
     char nameGroup[MAX_NAME_LENGTH];
     int32 ref = Vgetid(vId, -1);
@@ -113,7 +113,7 @@ std::vector<int32> hdf4cpp::HdfFile::getGroupIds(const std::string &name) {
     }
     return ids;
 }
-std::vector<hdf4cpp::HdfItem> hdf4cpp::HdfFile::getAll(const std::string& name) {
+std::vector<hdf4cpp::HdfItem> hdf4cpp::HdfFile::getAll(const std::string& name) const {
     std::vector<HdfItem> items;
     std::vector<int32> ids;
     ids = getDatasetIds(name);
@@ -129,7 +129,7 @@ std::vector<hdf4cpp::HdfItem> hdf4cpp::HdfFile::getAll(const std::string& name) 
 hdf4cpp::HdfAttribute hdf4cpp::HdfFile::getAttribute(const std::string &name) {
     return HdfAttribute(new HdfDatasetAttribute(sId, name));
 }
-bool hdf4cpp::HdfFile::isValid() {
+bool hdf4cpp::HdfFile::isValid() const {
     return sId != FAIL || vId != FAIL;
 }
 hdf4cpp::HdfFile::Iterator hdf4cpp::HdfFile::begin() const {

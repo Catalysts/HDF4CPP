@@ -99,7 +99,7 @@ public:
         return read(dest, ranges);
     }
 
-    virtual HdfAttribute getAttribute(const std::string& name) = 0;
+    virtual HdfAttribute getAttribute(const std::string& name) const = 0;
 
 protected:
     int32 id;
@@ -117,7 +117,7 @@ public:
     std::string getName() const;
     std::vector<int32> getDims();
     intn size() const;
-    HdfAttribute getAttribute(const std::string& name);
+    HdfAttribute getAttribute(const std::string& name) const;
 
     template <class T> bool read(std::vector<T>& dest, std::vector<Range>& ranges) {
         if(_size == FAIL) {
@@ -187,7 +187,7 @@ public:
     std::vector<int32> getDims();
     intn size() const;
 
-    HdfAttribute getAttribute(const std::string& name);
+    HdfAttribute getAttribute(const std::string& name) const;
 
 private:
     std::string name;
@@ -211,7 +211,7 @@ public:
 
     intn size() const;
 
-    HdfAttribute getAttribute(const std::string &name);
+    HdfAttribute getAttribute(const std::string &name) const;
 
     template<class T>
     bool read(std::vector<T> &dest, const std::string &field, int32 records) {
@@ -304,13 +304,13 @@ public:
     HdfItem& operator=(const HdfItem& item) = delete;
     HdfItem& operator=(HdfItem&& it);
     bool isValid() const;
-    explicit operator bool() { return isValid(); }
+    explicit operator bool() const { return isValid(); }
 
     Type getType() const;
     std::string getName() const;
     std::vector<int32> getDims();
     intn size() const;
-    HdfAttribute getAttribute(const std::string& name);
+    HdfAttribute getAttribute(const std::string& name) const;
 
     template <class T> bool read(std::vector<T>& dest) {
         if(!isValid()) {

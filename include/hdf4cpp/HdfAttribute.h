@@ -102,7 +102,7 @@ public:
     HdfAttribute& operator=(HdfAttribute&& attribute);
 
     bool isValid() const;
-    explicit operator bool() { return isValid(); }
+    explicit operator bool() const { return isValid(); }
     Type getType() const;
 
     intn size() const;

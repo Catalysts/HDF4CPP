@@ -29,7 +29,7 @@ std::vector<int32> hdf4cpp::HdfDatasetItem::getDims() {
     SDgetinfo(id, name, &size, dims, &dataType, &nrAtt);
     return std::vector<int32>(dims, dims + size);
 }
-hdf4cpp::HdfAttribute hdf4cpp::HdfDatasetItem::getAttribute(const std::string &name) {
+hdf4cpp::HdfAttribute hdf4cpp::HdfDatasetItem::getAttribute(const std::string &name) const {
     return HdfAttribute(new HdfDatasetAttribute(id, name));
 }
 hdf4cpp::Type hdf4cpp::HdfDatasetItem::getType() const {
@@ -60,7 +60,7 @@ hdf4cpp::HdfGroupItem::HdfGroupItem(int32 id) : HdfItemBase(id) {
 std::vector<int32> hdf4cpp::HdfGroupItem::getDims() {
     throw std::runtime_error("HDF4CPP: getDims not defined for HdfGroupItem");
 }
-hdf4cpp::HdfAttribute hdf4cpp::HdfGroupItem::getAttribute(const std::string &name) {
+hdf4cpp::HdfAttribute hdf4cpp::HdfGroupItem::getAttribute(const std::string &name) const {
     return HdfAttribute(new HdfGroupAttribute(id, name));
 }
 hdf4cpp::Type hdf4cpp::HdfGroupItem::getType() const {
@@ -99,7 +99,7 @@ hdf4cpp::HdfDataItem::~HdfDataItem() {
         VSdetach(id);
     }
 }
-hdf4cpp::HdfAttribute hdf4cpp::HdfDataItem::getAttribute(const std::string &name) {
+hdf4cpp::HdfAttribute hdf4cpp::HdfDataItem::getAttribute(const std::string &name) const {
     return HdfAttribute(new HdfDataAttribute(id, name));
 }
 hdf4cpp::Type hdf4cpp::HdfDataItem::getType() const {
@@ -136,7 +136,7 @@ std::vector<int32> hdf4cpp::HdfItem::getDims() {
         return std::vector<int32>();
     }
 }
-hdf4cpp::HdfAttribute hdf4cpp::HdfItem::getAttribute(const std::string &name) {
+hdf4cpp::HdfAttribute hdf4cpp::HdfItem::getAttribute(const std::string &name) const {
     return item->getAttribute(name);
 }
 hdf4cpp::Type hdf4cpp::HdfItem::getType() const {

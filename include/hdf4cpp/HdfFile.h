@@ -21,12 +21,12 @@ class HdfFile {
     HdfFile& operator=(const HdfFile& file) = delete;
     HdfFile& operator=(HdfFile&& file);
     ~HdfFile();
-    bool isValid();
+    bool isValid() const;
 
-    explicit operator bool() { return isValid(); }
+    explicit operator bool() const { return isValid(); }
 
-    HdfItem get(const std::string& name);
-    std::vector<HdfItem> getAll(const std::string& name);
+    HdfItem get(const std::string& name) const;
+    std::vector<HdfItem> getAll(const std::string& name) const;
 
     HdfAttribute getAttribute(const std::string& name);
 
@@ -38,13 +38,13 @@ class HdfFile {
   private:
     void destroy();
 
-    int32 getDatasetId(const std::string& name);
-    int32 getGroupId(const std::string& name);
-    int32 getDataId(const std::string& name);
+    int32 getDatasetId(const std::string& name) const;
+    int32 getGroupId(const std::string& name) const;
+    int32 getDataId(const std::string& name) const;
 
-    std::vector<int32> getDatasetIds(const std::string& name);
-    std::vector<int32> getGroupIds(const std::string& name);
-    std::vector<int32> getDataIds(const std::string& name);
+    std::vector<int32> getDatasetIds(const std::string& name) const;
+    std::vector<int32> getGroupIds(const std::string& name) const;
+    std::vector<int32> getDataIds(const std::string& name) const;
 
     int32 sId;
     int32 vId;

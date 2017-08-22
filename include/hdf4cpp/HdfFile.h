@@ -79,7 +79,7 @@ public:
     }
 
     HdfItem operator*() {
-        if(index < 0 || index >= file->loneRefs.size()) {
+        if(index < 0 || index >= (int) file->loneRefs.size()) {
             throw std::runtime_error("HDF4CPP: cannot access invalid item");
         }
         int32 ref = file->loneRefs[index].first;

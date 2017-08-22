@@ -39,7 +39,7 @@ struct Range {
     }
 
     static void fill(std::vector<Range>& ranges, const std::vector<int32>& dims) {
-        for(int i = ranges.size(); i < dims.size(); ++i) {
+        for(size_t i = ranges.size(); i < dims.size(); ++i) {
             ranges.push_back(Range(0, dims[i]));
         }
     }
@@ -68,7 +68,7 @@ public:
             throw std::runtime_error("HDF4CPP: incorrect number of ranges");
         }
         intn length = 1;
-        for(int i = 0; i < dims.size(); ++i) {
+        for(size_t i = 0; i < dims.size(); ++i) {
             if(ranges[i].begin < 0 || ranges[i].begin >= dims[i] || ranges[i].quantity < 0 || ranges[i].begin + ranges[i].quantity > dims[i] || ranges[i].stride <= 0) {
                 throw std::runtime_error("HDF4CPP: incorrect range");
             }
@@ -129,7 +129,7 @@ public:
         std::vector<int32> dims = getDims();
         Range::fill(ranges, dims);
         intn length = 1;
-        for(int i = 0; i < ranges.size(); ++i) {
+        for(size_t i = 0; i < ranges.size(); ++i) {
             if(!ranges[i].check(dims[i])) {
                 return false;
                 // TODO or throw exception (ask Moritz)

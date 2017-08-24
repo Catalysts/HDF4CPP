@@ -67,16 +67,10 @@ int32 hdf4cpp::HdfGroupItem::getDataType() const {
     raiseException(INVALID_OPERATION);
 }
 hdf4cpp::HdfDataItem::HdfDataItem(int32 id, const HdfDestroyerChain& chain) : HdfItemBase(id, VDATA, chain) {
-    char fieldNameList[MAX_NAME_LENGTH];
-    char _name[MAX_NAME_LENGTH];
-    VSinquire(id, &nrRecords, &interlace, fieldNameList, &recordSize, _name);
-    name = std::string(_name);
-    std::istringstream in(fieldNameList);
-    std::string token;
-    while(getline(in, token, ',')) {
-        fieldNames.push_back(token);
-    }
     this->chain.push_back(new HdfDataItemDestroyer(id));
+    char _name[MAX_NAME_LENGTH];
+    VSinquire(id, &nrRecords, &interlace, nullptr, &recordSize, _name);
+    name = std::string(_name);
 }
 hdf4cpp::HdfDataItem::~HdfDataItem() {
 }
@@ -90,13 +84,10 @@ std::string hdf4cpp::HdfDataItem::getName() const {
     return name;
 }
 std::vector<int32> hdf4cpp::HdfDataItem::getDims() {
-    std::vector<int32> dims;
-    dims.push_back(nrRecords);
-    dims.push_back((int32) fieldNames.size());
-    return dims;
+    raiseException(INVALID_OPERATION);
 }
 intn hdf4cpp::HdfDataItem::size() const {
-    return nrRecords * (int32) fieldNames.size();
+    raiseException(INVALID_OPERATION);
 }
 int32 hdf4cpp::HdfDataItem::getDataType() const {
     return 0;

@@ -178,7 +178,7 @@ class HdfDataItem : public HdfItemBase {
         }
 
         int32 fieldSize = VSsizeof(id, (char*)field.c_str());
-        if (sizeof(T) < fieldSize) {
+        if (sizeof(T) < (size_t) fieldSize) {
             raiseException(BUFFER_SIZE_NOT_ENOUGH);
         }
 
@@ -242,7 +242,6 @@ class HdfDataItem : public HdfItemBase {
     int32 nrRecords;
     int32 interlace;
     int32 recordSize;
-    std::vector<std::string> fieldNames;
 
     int32 getDataType() const;
 };

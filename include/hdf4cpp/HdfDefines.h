@@ -9,7 +9,7 @@
 #include <hdf/mfhdf.h>
 
 #define MAX_DIMENSION 32
-#define MAX_NAME_LENGTH 100
+#define MAX_NAME_LENGTH 1000
 
 namespace hdf4cpp {
 

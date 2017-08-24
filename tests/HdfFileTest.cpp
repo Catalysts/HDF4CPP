@@ -213,3 +213,24 @@ TEST_F(HdfFileTest, VDataAttributes) {
     attribute.get(vec);
     ASSERT_EQ(vec, std::vector<int32>({1, 2, 3, 3, 2, 1}));
 }
+
+TEST_F(HdfFileTest, SdataDestroyer) {
+    HdfAttribute attribute = file.get("DataWithAttributes").getAttribute("Integer");
+    std::vector<int32> vec;
+    attribute.get(vec);
+    ASSERT_EQ(vec, std::vector<int32>({12345}));
+}
+
+TEST_F(HdfFileTest, VgroupDestroyer) {
+    HdfAttribute attribute = file.get("GroupWithOnlyAttribute").getAttribute("Egy");
+    std::vector<int8> vec;
+    attribute.get(vec);
+    ASSERT_EQ(vec, std::vector<int8>({1}));
+}
+
+TEST_F(HdfFileTest, VdataDestroyer) {
+    HdfAttribute attribute = file.get("Vdata").getAttribute("attribute");
+    std::vector<int32> vec;
+    attribute.get(vec);
+    ASSERT_EQ(vec, std::vector<int32>({1, 2, 3, 3, 2, 1}));
+}

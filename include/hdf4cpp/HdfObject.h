@@ -7,6 +7,7 @@
 
 #include <hdf4cpp/HdfDefines.h>
 #include <hdf4cpp/HdfException.h>
+#include <hdf4cpp/HdfDestroyer.h>
 
 namespace hdf4cpp {
 
@@ -16,9 +17,10 @@ class HdfObject {
     virtual ClassType getClassType() const { return classType; }
 
   protected:
-    HdfObject(const Type& type, const ClassType& classType) : type(type),
-                                                              classType(classType) {}
-    HdfObject(const HdfObject *object) : type(object->getType()), classType(object->getClassType()) {}
+    HdfObject(const Type& type, const ClassType& classType, const HdfDestroyerChain& chain = HdfDestroyerChain()) : type(type),
+                                                                                                                    classType(classType),
+                                                                                                                    chain(chain) {}
+    HdfObject(const HdfObject *object) : type(object->getType()), classType(object->getClassType()), chain(object->chain) {}
 
     virtual void setType(const Type& type) { this->type = type; }
     virtual void setClassType(const ClassType& classType) { this->classType = classType; }
@@ -34,6 +36,9 @@ class HdfObject {
   private:
     Type type;
     ClassType classType;
+
+  protected:
+    HdfDestroyerChain chain;
 };
 }
 

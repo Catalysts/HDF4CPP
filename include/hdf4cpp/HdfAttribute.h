@@ -6,6 +6,8 @@
 #define HDF4CPP_HDFATTRIBUTE_H
 #include <hdf4cpp/HdfException.h>
 #include <hdf4cpp/HdfObject.h>
+#include <hdf4cpp/HdfDestroyer.h>
+#include <iostream>
 #include <hdf/hdf.h>
 #include <hdf/mfhdf.h>
 #include <string>
@@ -17,7 +19,7 @@ namespace hdf4cpp {
 
 class HdfAttributeBase : public HdfObject {
 public:
-    HdfAttributeBase(int32 id, int32 index, Type type) : HdfObject(type, ATTRIBUTE), id(id), index(index) {
+    HdfAttributeBase(int32 id, int32 index, Type type, const HdfDestroyerChain& chain) : HdfObject(type, ATTRIBUTE, chain), id(id), index(index) {
         if(id == FAIL || index == FAIL) {
             raiseException(INVALID_ID);
         }
@@ -50,7 +52,7 @@ protected:
 
 class HdfDatasetAttribute : public HdfAttributeBase {
 public:
-    HdfDatasetAttribute(int32 id, const std::string& name);
+    HdfDatasetAttribute(int32 id, const std::string& name, const HdfDestroyerChain& chain);
 
     intn size() const;
 
@@ -64,7 +66,7 @@ private:
 
 class HdfGroupAttribute : public HdfAttributeBase {
 public:
-    HdfGroupAttribute(int32 id, const std::string& name);
+    HdfGroupAttribute(int32 id, const std::string& name, const HdfDestroyerChain& chain);
 
     intn size() const;
 
@@ -78,7 +80,7 @@ private:
 
 class HdfDataAttribute : public HdfAttributeBase {
 public:
-    HdfDataAttribute(int32 id, const std::string& name);
+    HdfDataAttribute(int32 id, const std::string& name, const HdfDestroyerChain& chain);
 
     intn size() const;
 
@@ -91,7 +93,7 @@ private:
 
 class HdfAttribute : public HdfObject {
 public:
-    HdfAttribute(HdfAttributeBase *attribute) : HdfObject(attribute->getType(), attribute->getClassType()), attribute(attribute) {}
+    HdfAttribute(HdfAttributeBase *attribute) : HdfObject(attribute), attribute(attribute) {}
     HdfAttribute(const HdfAttribute&) = delete;
     HdfAttribute(HdfAttribute&& attr);
     HdfAttribute& operator=(const HdfAttribute& attribute) = delete;

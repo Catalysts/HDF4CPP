@@ -11,6 +11,7 @@
 #include <hdf4cpp/HdfObject.h>
 #include <hdf4cpp/HdfItem.h>
 #include <hdf4cpp/HdfAttribute.h>
+#include <hdf4cpp/HdfDestroyer.h>
 
 namespace hdf4cpp {
 
@@ -37,7 +38,6 @@ class HdfFile : public HdfObject {
     Iterator end() const;
 
   private:
-    void destroy();
 
     int32 getDatasetId(const std::string& name) const;
     int32 getGroupId(const std::string& name) const;
@@ -55,7 +55,7 @@ class HdfFile : public HdfObject {
 
 class HdfFile::Iterator : public HdfObject, public std::iterator<std::bidirectional_iterator_tag, HdfItem> {
 public:
-    Iterator(const HdfFile* file, int32 index) : HdfObject(HFILE, ITERATOR),
+    Iterator(const HdfFile* file, int32 index, const HdfDestroyerChain& chain) : HdfObject(HFILE, ITERATOR, chain),
                                                                                  file(file),
                                                                                  index(index) {}
 
@@ -89,11 +89,11 @@ public:
         switch(file->loneRefs[index].second) {
             case VGROUP: {
                 int32 id = Vattach(file->vId, ref, "r");
-                return HdfItem(new HdfGroupItem(id), file->sId, file->vId);
+                return HdfItem(new HdfGroupItem(id, chain), file->sId, file->vId);
             }
             case VDATA: {
                 int32 id = VSattach(file->vId, ref, "r");
-                return HdfItem(new HdfDataItem(id), file->sId, file->vId);
+                return HdfItem(new HdfDataItem(id, chain), file->sId, file->vId);
             }
             default: {
                 raiseException(OUT_OF_RANGE);

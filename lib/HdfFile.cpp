@@ -20,6 +20,8 @@ hdf4cpp::HdfFile::HdfFile(const std::string& path) : HdfObject(HFILE, FILE) {
 
     Vstart(vId);
 
+    chain.push_back(new HdfFileDestroyer(sId, vId));
+
     int32 loneSize = Vlone(vId, nullptr, 0);
     std::vector<int32> refs((size_t) loneSize);
     Vlone(vId, refs.data(), loneSize);
@@ -42,7 +44,6 @@ hdf4cpp::HdfFile::HdfFile(HdfFile&& file) : HdfObject(file.getType(), file.getCl
     loneRefs.clear();
 }
 hdf4cpp::HdfFile& hdf4cpp::HdfFile::operator=(HdfFile&& file) {
-    destroy();
     setType(file.getType());
     setClassType(file.getClassType());
     sId = file.sId;
@@ -52,13 +53,7 @@ hdf4cpp::HdfFile& hdf4cpp::HdfFile::operator=(HdfFile&& file) {
     file.loneRefs.clear();
     return *this;
 }
-void hdf4cpp::HdfFile::destroy() {
-    SDend(sId);
-    Vend(vId);
-    Hclose(vId);
-}
 hdf4cpp::HdfFile::~HdfFile() {
-    destroy();
 }
 int32 hdf4cpp::HdfFile::getSId() const {
     return sId;
@@ -87,11 +82,11 @@ hdf4cpp::HdfItem hdf4cpp::HdfFile::get(const std::string& name) const {
             if(id == FAIL) {
                 raiseException(INVALID_ID);
             }
-            return HdfItem(new HdfDataItem(id), sId, vId);
+            return HdfItem(new HdfDataItem(id, chain), sId, vId);
         }
-        return HdfItem(new HdfGroupItem(id), sId, vId);
+        return HdfItem(new HdfGroupItem(id, chain), sId, vId);
     }
-    return HdfItem(new HdfDatasetItem(id), sId, vId);
+    return HdfItem(new HdfDatasetItem(id, chain), sId, vId);
 }
 std::vector<int32> hdf4cpp::HdfFile::getDatasetIds(const std::string &name) const {
     std::vector<int32> ids;
@@ -130,20 +125,20 @@ std::vector<hdf4cpp::HdfItem> hdf4cpp::HdfFile::getAll(const std::string& name) 
     std::vector<int32> ids;
     ids = getDatasetIds(name);
     for(const auto& id : ids) {
-        items.push_back(HdfItem(new HdfDatasetItem(id), sId, vId));
+        items.push_back(HdfItem(new HdfDatasetItem(id, chain), sId, vId));
     }
     ids = getGroupIds(name);
     for(const auto& id : ids) {
-        items.push_back(HdfItem(new HdfGroupItem(id), sId, vId));
+        items.push_back(HdfItem(new HdfGroupItem(id, chain), sId, vId));
     }
     return std::move(items);
 }
 hdf4cpp::HdfAttribute hdf4cpp::HdfFile::getAttribute(const std::string &name) {
-    return HdfAttribute(new HdfDatasetAttribute(sId, name));
+    return HdfAttribute(new HdfDatasetAttribute(sId, name, chain));
 }
 hdf4cpp::HdfFile::Iterator hdf4cpp::HdfFile::begin() const {
-    return Iterator(this, 0);
+    return Iterator(this, 0, chain);
 }
 hdf4cpp::HdfFile::Iterator hdf4cpp::HdfFile::end() const {
-    return Iterator(this, (int32) loneRefs.size());
+    return Iterator(this, (int32) loneRefs.size(), chain);
 }

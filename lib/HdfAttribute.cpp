@@ -6,7 +6,7 @@
 #include <hdf4cpp/HdfAttribute.h>
 #include <stdexcept>
 
-hdf4cpp::HdfDatasetAttribute::HdfDatasetAttribute(int32 id, const std::string& name) : HdfAttributeBase(id, SDfindattr(id, name.c_str()), SDATA) {
+hdf4cpp::HdfDatasetAttribute::HdfDatasetAttribute(int32 id, const std::string& name, const HdfDestroyerChain& chain) : HdfAttributeBase(id, SDfindattr(id, name.c_str()), SDATA, chain) {
     char waste[MAX_NAME_LENGTH];
     if(SDattrinfo(id, index, waste, &dataType, &_size) == FAIL) {
         raiseException(STATUS_RETURN_FAIL);
@@ -30,7 +30,7 @@ void hdf4cpp::HdfDatasetAttribute::get(void *dest) {
         raiseException(STATUS_RETURN_FAIL);
     }
 }
-hdf4cpp::HdfGroupAttribute::HdfGroupAttribute(int32 id, const std::string& name) : HdfAttributeBase(id, 0, VGROUP) {
+hdf4cpp::HdfGroupAttribute::HdfGroupAttribute(int32 id, const std::string& name, const HdfDestroyerChain& chain) : HdfAttributeBase(id, 0, VGROUP, chain) {
     int32 nrAtts = Vnattrs2(id);
     for(intn i = 0; i < nrAtts; ++i) {
         char names[MAX_NAME_LENGTH];
@@ -57,7 +57,7 @@ void hdf4cpp::HdfGroupAttribute::get(void *dest) {
         raiseException(STATUS_RETURN_FAIL);
     }
 }
-hdf4cpp::HdfDataAttribute::HdfDataAttribute(int32 id, const std::string &name) : HdfAttributeBase(id, VSfindattr(id, _HDF_VDATA, name.c_str()), VDATA) {
+hdf4cpp::HdfDataAttribute::HdfDataAttribute(int32 id, const std::string &name, const HdfDestroyerChain& chain) : HdfAttributeBase(id, VSfindattr(id, _HDF_VDATA, name.c_str()), VDATA, chain) {
     if(VSattrinfo(id, _HDF_VDATA, index, nullptr, &dataType, &_size, nullptr) == FAIL) {
         raiseException(STATUS_RETURN_FAIL);
     }

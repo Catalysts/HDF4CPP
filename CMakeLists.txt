@@ -16,6 +16,7 @@ add_library(hdf4cpp
         lib/HdfAttribute.cpp
         lib/HdfException.cpp
         include/hdf4cpp/HdfObject.h
+        include/hdf4cpp/HdfDestroyer.h
         )
 
 target_include_directories(hdf4cpp

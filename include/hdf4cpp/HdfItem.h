@@ -8,6 +8,7 @@
 #include <hdf4cpp/HdfDefines.h>
 #include <hdf4cpp/HdfAttribute.h>
 #include <hdf4cpp/HdfException.h>
+#include <hdf4cpp/HdfDestroyer.h>
 #include <iostream>
 #include <algorithm>
 #include <map>
@@ -49,7 +50,7 @@ struct Range {
 class HdfItemBase : public HdfObject {
 public:
 
-    HdfItemBase(int32 id, const Type& type) : HdfObject(type, ITEM), id(id) {
+    HdfItemBase(int32 id, const Type& type, const HdfDestroyerChain& chain) : HdfObject(type, ITEM, chain), id(id) {
         if(id == FAIL) {
             raiseException(INVALID_ID);
         }
@@ -71,7 +72,7 @@ protected:
 
 class HdfDatasetItem : public HdfItemBase {
 public:
-    HdfDatasetItem(int32 id);
+    HdfDatasetItem(int32 id, const HdfDestroyerChain& chain);
     ~HdfDatasetItem();
 
     int32 getId() const;
@@ -131,7 +132,7 @@ private:
 
 class HdfGroupItem : public HdfItemBase {
 public:
-    HdfGroupItem(int32 id);
+    HdfGroupItem(int32 id, const HdfDestroyerChain& chain);
     ~HdfGroupItem();
 
     int32 getId() const;
@@ -149,7 +150,7 @@ private:
 
 class HdfDataItem : public HdfItemBase {
 public:
-    HdfDataItem(int32 id);
+    HdfDataItem(int32 id, const HdfDestroyerChain& chain);
 
     ~HdfDataItem();
 
@@ -307,8 +308,8 @@ private:
 
 class HdfItem::Iterator : public HdfObject, public std::iterator<std::bidirectional_iterator_tag, HdfItem> {
 public:
-    Iterator(int32 sId, int32 vId, int32 key, int32 index, Type type) :
-                                                                        HdfObject(type, ITERATOR),
+    Iterator(int32 sId, int32 vId, int32 key, int32 index, Type type, const HdfDestroyerChain& chain) :
+                                                                        HdfObject(type, ITERATOR, chain),
                                                                         sId(sId),
                                                                         vId(vId),
                                                                         key(key),
@@ -343,13 +344,13 @@ public:
         }
         if(Visvs(key, ref)) {
             int32 id = VSattach(vId, ref, "r");
-            return HdfItem(new HdfDataItem(id), sId, vId);
+            return HdfItem(new HdfDataItem(id, chain), sId, vId);
         } else if(Visvg(key, ref)) {
             int32 id = Vattach(vId, ref, "r");
-            return HdfItem(new HdfGroupItem(id), sId, vId);
+            return HdfItem(new HdfGroupItem(id, chain), sId, vId);
         } else {
             int32 id = SDselect(sId, SDreftoindex(sId, ref));
-            return HdfItem(new HdfDatasetItem(id), sId, vId);
+            return HdfItem(new HdfDatasetItem(id, chain), sId, vId);
         }
     }
 

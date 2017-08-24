@@ -89,8 +89,8 @@ public:
         switch(file->loneRefs[index].second) {
             case VGROUP: {
                 int32 id = Vattach(file->vId, ref, "r");
-            }
                 return HdfItem(new HdfGroupItem(id), file->sId, file->vId);
+            }
             case VDATA: {
                 int32 id = VSattach(file->vId, ref, "r");
                 return HdfItem(new HdfDataItem(id), file->sId, file->vId);

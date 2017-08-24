@@ -5,8 +5,6 @@
 #ifndef GRASP_SEGMENTER_HDFDESTROYER_H
 #define GRASP_SEGMENTER_HDFDESTROYER_H
 
-#include <iostream>
-
 #include <boost/shared_ptr.hpp>
 #include <hdf/hdf.h>
 #include <hdf/mfhdf.h>

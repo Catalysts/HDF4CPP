@@ -7,7 +7,7 @@
 #include <hdf4cpp/HdfException.h>
 #include <hdf4cpp/HdfObject.h>
 #include <hdf4cpp/HdfDestroyer.h>
-#include <iostream>
+
 #include <hdf/hdf.h>
 #include <hdf/mfhdf.h>
 #include <string>

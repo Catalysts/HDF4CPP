@@ -9,7 +9,7 @@
 #include <hdf4cpp/HdfAttribute.h>
 #include <hdf4cpp/HdfException.h>
 #include <hdf4cpp/HdfDestroyer.h>
-#include <iostream>
+
 #include <algorithm>
 #include <map>
 #include <memory>

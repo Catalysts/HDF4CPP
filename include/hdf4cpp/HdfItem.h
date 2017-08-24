@@ -304,8 +304,6 @@ public:
     Iterator end() const;
 
 private:
-    void read_sdata_internal(void* dest, size_t length, size_t type_siye);
-
     std::unique_ptr<HdfItemBase> item;
     int32 sId;
     int32 vId;

@@ -6,18 +6,11 @@
 #include <hdf4cpp/HdfAttribute.h>
 #include <stdexcept>
 
-hdf4cpp::HdfDatasetAttribute::HdfDatasetAttribute(int32 id, const std::string& name) : HdfAttributeBase(id, SDfindattr(id, name.c_str())) {
-    if(index != FAIL) {
-        int32 nrValues;
-        char nameRet[MAX_NAME_LENGTH];
-        SDattrinfo(id, index, nameRet, &dataType, &_size);
-    } else {
-        dataType = 0;
-        _size = FAIL;
+hdf4cpp::HdfDatasetAttribute::HdfDatasetAttribute(int32 id, const std::string& name) : HdfAttributeBase(id, SDfindattr(id, name.c_str()), SDATA) {
+    char waste[MAX_NAME_LENGTH];
+    if(SDattrinfo(id, index, waste, &dataType, &_size) == FAIL) {
+        raiseException(STATUS_RETURN_FAIL);
     }
-}
-hdf4cpp::Type hdf4cpp::HdfDatasetAttribute::getType() const {
-    return VDATA;
 }
 intn hdf4cpp::HdfDatasetAttribute::size() const {
     return _size;
@@ -25,21 +18,19 @@ intn hdf4cpp::HdfDatasetAttribute::size() const {
 int32 hdf4cpp::HdfDatasetAttribute::getDataType() const {
     return dataType;
 }
-bool hdf4cpp::HdfDatasetAttribute::get(void *dest) {
-    if(!isValid()) {
-        return false;
-    }
-
+void hdf4cpp::HdfDatasetAttribute::get(void *dest) {
     int32 nrValues;
     char nameRet[MAX_NAME_LENGTH];
     int32 status = SDattrinfo(id, index, nameRet, &dataType, &nrValues);
     if(status == FAIL) {
-        return false;
+        raiseException(STATUS_RETURN_FAIL);
     }
 
-    return SDreadattr(id, index, dest) != FAIL;
+    if(SDreadattr(id, index, dest) == FAIL) {
+        raiseException(STATUS_RETURN_FAIL);
+    }
 }
-hdf4cpp::HdfGroupAttribute::HdfGroupAttribute(int32 id, const std::string& name) : HdfAttributeBase(id, -1), _size(FAIL) {
+hdf4cpp::HdfGroupAttribute::HdfGroupAttribute(int32 id, const std::string& name) : HdfAttributeBase(id, 0, VGROUP) {
     int32 nrAtts = Vnattrs2(id);
     for(intn i = 0; i < nrAtts; ++i) {
         char names[MAX_NAME_LENGTH];
@@ -50,12 +41,10 @@ hdf4cpp::HdfGroupAttribute::HdfGroupAttribute(int32 id, const std::string& name)
             index = i;
             _size = count;
             dataType = type;
-            break;
+            return;
         }
     }
-}
-hdf4cpp::Type hdf4cpp::HdfGroupAttribute::getType() const {
-    return VGROUP;
+    raiseException(INVALID_NAME);
 }
 intn hdf4cpp::HdfGroupAttribute::size() const {
     return _size;
@@ -63,51 +52,38 @@ intn hdf4cpp::HdfGroupAttribute::size() const {
 int32 hdf4cpp::HdfGroupAttribute::getDataType() const {
     return dataType;
 }
-bool hdf4cpp::HdfGroupAttribute::get(void *dest) {
-    return Vgetattr2(id, index, dest) != FAIL;
-}
-hdf4cpp::HdfDataAttribute::HdfDataAttribute(int32 id, const std::string &name) : HdfAttributeBase(id, VSfindattr(id, _HDF_VDATA, name.c_str())) {
-    if(index != FAIL) {
-        int32 nrBytes;
-        char _name[MAX_NAME_LENGTH];
-        VSattrinfo(id, _HDF_VDATA, index, _name, &dataType, &_size, &nrBytes);
-    } else {
-        dataType = 0;
-        _size = FAIL;
+void hdf4cpp::HdfGroupAttribute::get(void *dest) {
+    if(Vgetattr2(id, index, dest) == FAIL) {
+        raiseException(STATUS_RETURN_FAIL);
     }
 }
-hdf4cpp::Type hdf4cpp::HdfDataAttribute::getType() const {
-    return VDATA;
+hdf4cpp::HdfDataAttribute::HdfDataAttribute(int32 id, const std::string &name) : HdfAttributeBase(id, VSfindattr(id, _HDF_VDATA, name.c_str()), VDATA) {
+    if(VSattrinfo(id, _HDF_VDATA, index, nullptr, &dataType, &_size, nullptr) == FAIL) {
+        raiseException(STATUS_RETURN_FAIL);
+    }
 }
 intn hdf4cpp::HdfDataAttribute::size() const {
     return _size;
 }
-bool hdf4cpp::HdfDataAttribute::get(void *dest) {
-    return VSgetattr(id, _HDF_VDATA, index, dest) != FAIL;
+void hdf4cpp::HdfDataAttribute::get(void *dest) {
+    if(VSgetattr(id, _HDF_VDATA, index, dest) == FAIL) {
+        raiseException(STATUS_RETURN_FAIL);
+    }
 }
 int32 hdf4cpp::HdfDataAttribute::getDataType() const {
     return dataType;
 }
-hdf4cpp::HdfAttribute::HdfAttribute(HdfAttribute &&other) : attribute(std::move(other.attribute)) {
+hdf4cpp::HdfAttribute::HdfAttribute(HdfAttribute &&other) : HdfObject(other.getType(), other.getClassType()), attribute(std::move(other.attribute)) {
 }
 hdf4cpp::HdfAttribute& hdf4cpp::HdfAttribute::operator=(HdfAttribute&& attr) {
-    attribute = std::move(attr.attribute);\
+    attribute = std::move(attr.attribute);
+    setType(attribute->getType());
+    setClassType(attribute->getClassType());
     return *this;
 }
-bool hdf4cpp::HdfAttribute::isValid() const {
-    return attribute && attribute->isValid();
-}
 hdf4cpp::Type hdf4cpp::HdfAttribute::getType() const {
-    if(isValid()) {
-        return attribute->getType();
-    } else {
-        return NONE;
-    }
+    return attribute->getType();
 }
 intn hdf4cpp::HdfAttribute::size() const {
-    if(isValid()) {
-        return attribute->size();
-    } else {
-        return FAIL;
-    }
+    return attribute->size();
 }

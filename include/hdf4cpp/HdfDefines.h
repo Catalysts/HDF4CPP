@@ -13,7 +13,23 @@
 
 namespace hdf4cpp {
 
-enum Type {SDATA, VGROUP, VDATA, NONE};
+enum Type {HFILE, SDATA, VGROUP, VDATA};
+
+enum ClassType {FILE, ITEM, ATTRIBUTE, ITERATOR};
+
+
+enum ExceptionType {
+    INVALID_ID,
+    INVALID_OPERATION,
+    INVALID_NAME,
+    OUT_OF_RANGE,
+    BUFFER_SIZE_NOT_ENOUGH,
+    BUFFER_SIZE_NOT_DIVISIBLE,
+    INVALID_RANGES,
+    STATUS_RETURN_FAIL,
+    INVALID_DATA_TYPE,
+    OTHER
+};
 
 const std::multimap<int32, int32> typeSizeMap = {
         {DFNT_CHAR, SIZE_CHAR},

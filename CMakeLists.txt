@@ -13,7 +13,10 @@ find_package(HDF4)
 add_library(hdf4cpp
         lib/HdfFile.cpp
         lib/HdfItem.cpp
-        lib/HdfAttribute.cpp)
+        lib/HdfAttribute.cpp
+        lib/HdfException.cpp
+        include/hdf4cpp/HdfObject.h
+        )
 
 target_include_directories(hdf4cpp
         PUBLIC

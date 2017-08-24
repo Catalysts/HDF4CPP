@@ -8,12 +8,13 @@
 #include <string>
 #include <vector>
 
+#include <hdf4cpp/HdfObject.h>
 #include <hdf4cpp/HdfItem.h>
 #include <hdf4cpp/HdfAttribute.h>
 
 namespace hdf4cpp {
 
-class HdfFile {
+class HdfFile : public HdfObject {
   public:
     HdfFile(const std::string& path);
     HdfFile(const HdfFile& file) = delete;
@@ -21,9 +22,9 @@ class HdfFile {
     HdfFile& operator=(const HdfFile& file) = delete;
     HdfFile& operator=(HdfFile&& file);
     ~HdfFile();
-    bool isValid() const;
 
-    explicit operator bool() const { return isValid(); }
+    int32 getSId() const;
+    int32 getVId() const;
 
     HdfItem get(const std::string& name) const;
     std::vector<HdfItem> getAll(const std::string& name) const;
@@ -52,9 +53,11 @@ class HdfFile {
     std::vector<std::pair<int32, Type> > loneRefs;
 };
 
-class HdfFile::Iterator : public std::iterator<std::bidirectional_iterator_tag, HdfItem> {
+class HdfFile::Iterator : public HdfObject, public std::iterator<std::bidirectional_iterator_tag, HdfItem> {
 public:
-    Iterator(const HdfFile* file, int32 index) : file(file), index(index) {}
+    Iterator(const HdfFile* file, int32 index) : HdfObject(HFILE, ITERATOR),
+                                                                                 file(file),
+                                                                                 index(index) {}
 
     bool operator!=(const Iterator& it) { return index != it.index; }
     bool operator==(const Iterator& it) { return index == it.index; }
@@ -80,20 +83,20 @@ public:
 
     HdfItem operator*() {
         if(index < 0 || index >= (int) file->loneRefs.size()) {
-            throw std::runtime_error("HDF4CPP: cannot access invalid item");
+            raiseException(OUT_OF_RANGE);
         }
         int32 ref = file->loneRefs[index].first;
         switch(file->loneRefs[index].second) {
             case VGROUP: {
                 int32 id = Vattach(file->vId, ref, "r");
-                return HdfItem(new HdfGroupItem(id), file->sId, file->vId);
             }
+                return HdfItem(new HdfGroupItem(id), file->sId, file->vId);
             case VDATA: {
                 int32 id = VSattach(file->vId, ref, "r");
                 return HdfItem(new HdfDataItem(id), file->sId, file->vId);
             }
             default: {
-                return HdfItem(nullptr, file->sId, file->vId);
+                raiseException(OUT_OF_RANGE);
             }
         }
     }

@@ -2,38 +2,28 @@
 // Created by patrik on 11.08.17.
 //
 
+#include <hdf4cpp/HdfFile.h>
 #include <hdf4cpp/HdfItem.h>
 #include <hdf/mfhdf.h>
 #include <sstream>
 
-hdf4cpp::HdfDatasetItem::HdfDatasetItem(int32 id) : HdfItemBase(id) {
-    if(id == FAIL) {
-        _size = FAIL;
-    } else {
-        std::vector<int32> dims = getDims();
-        _size = 1;
-        std::for_each(dims.begin(), dims.end(), [this](const int32 &t) {
-            _size *= t;
-        });
-        int32 dim[MAX_DIMENSION];
-        int32 size, nrAtt;
-        char _name[MAX_NAME_LENGTH];
-        SDgetinfo(id, _name, &size, dim, &dataType, &nrAtt);
-        name = std::string(_name);
-    }
+hdf4cpp::HdfDatasetItem::HdfDatasetItem(int32 id) : HdfItemBase(id, SDATA) {
+    _size = 1;
+    std::for_each(dims.begin(), dims.end(), [this](const int32 &t) {
+        _size *= t;
+    });
+    int32 dim[MAX_DIMENSION];
+    int32 size;
+    char _name[MAX_NAME_LENGTH];
+    SDgetinfo(id, _name, &size, dim, &dataType, nullptr);
+    dims = std::vector<int32>(dim, dim + size);
+    name = std::string(_name);
 }
 std::vector<int32> hdf4cpp::HdfDatasetItem::getDims() {
-    int32 dims[MAX_DIMENSION];
-    int32 size, dataType, nrAtt;
-    char name[MAX_NAME_LENGTH];
-    SDgetinfo(id, name, &size, dims, &dataType, &nrAtt);
-    return std::vector<int32>(dims, dims + size);
+    return dims;
 }
 hdf4cpp::HdfAttribute hdf4cpp::HdfDatasetItem::getAttribute(const std::string &name) const {
     return HdfAttribute(new HdfDatasetAttribute(id, name));
-}
-hdf4cpp::Type hdf4cpp::HdfDatasetItem::getType() const {
-    return SDATA;
 }
 std::string hdf4cpp::HdfDatasetItem::getName() const {
     return name;
@@ -45,26 +35,21 @@ int32 hdf4cpp::HdfDatasetItem::getDataType() const {
     return dataType;
 }
 hdf4cpp::HdfDatasetItem::~HdfDatasetItem() {
-    if(isValid()) {
-        SDendaccess(id);
-    }
+    SDendaccess(id);
 }
 intn hdf4cpp::HdfDatasetItem::size() const {
     return _size;
 }
-hdf4cpp::HdfGroupItem::HdfGroupItem(int32 id) : HdfItemBase(id) {
+hdf4cpp::HdfGroupItem::HdfGroupItem(int32 id) : HdfItemBase(id, VGROUP) {
     char _name[MAX_NAME_LENGTH];
     Vgetname(id, _name);
     name = std::string(_name);
 }
 std::vector<int32> hdf4cpp::HdfGroupItem::getDims() {
-    throw std::runtime_error("HDF4CPP: getDims not defined for HdfGroupItem");
+    raiseException(INVALID_OPERATION);
 }
 hdf4cpp::HdfAttribute hdf4cpp::HdfGroupItem::getAttribute(const std::string &name) const {
     return HdfAttribute(new HdfGroupAttribute(id, name));
-}
-hdf4cpp::Type hdf4cpp::HdfGroupItem::getType() const {
-    return VGROUP;
 }
 std::string hdf4cpp::HdfGroupItem::getName() const {
     return name;
@@ -73,17 +58,15 @@ int32 hdf4cpp::HdfGroupItem::getId() const {
     return id;
 }
 hdf4cpp::HdfGroupItem::~HdfGroupItem() {
-    if(isValid()) {
-        Vdetach(id);
-    }
+    Vdetach(id);
 }
 intn hdf4cpp::HdfGroupItem::size() const {
-    throw std::runtime_error("HdfFile: read not defined for HdfGroupItem");
+    raiseException(INVALID_OPERATION);
 }
 int32 hdf4cpp::HdfGroupItem::getDataType() const {
-    throw std::runtime_error("HDF4CPP: no data type for HdfGroup");
+    raiseException(INVALID_OPERATION);
 }
-hdf4cpp::HdfDataItem::HdfDataItem(int32 id) : HdfItemBase(id) {
+hdf4cpp::HdfDataItem::HdfDataItem(int32 id) : HdfItemBase(id, VDATA) {
     char fieldNameList[MAX_NAME_LENGTH];
     char _name[MAX_NAME_LENGTH];
     VSinquire(id, &nrRecords, &interlace, fieldNameList, &recordSize, _name);
@@ -95,15 +78,10 @@ hdf4cpp::HdfDataItem::HdfDataItem(int32 id) : HdfItemBase(id) {
     }
 }
 hdf4cpp::HdfDataItem::~HdfDataItem() {
-    if(isValid()) {
-        VSdetach(id);
-    }
+    VSdetach(id);
 }
 hdf4cpp::HdfAttribute hdf4cpp::HdfDataItem::getAttribute(const std::string &name) const {
     return HdfAttribute(new HdfDataAttribute(id, name));
-}
-hdf4cpp::Type hdf4cpp::HdfDataItem::getType() const {
-    return VDATA;
 }
 int32 hdf4cpp::HdfDataItem::getId() const {
     return id;
@@ -123,54 +101,44 @@ intn hdf4cpp::HdfDataItem::size() const {
 int32 hdf4cpp::HdfDataItem::getDataType() const {
     return 0;
 }
-hdf4cpp::HdfItem::HdfItem(HdfItem&& other) : item(std::move(other.item)), sId(other.sId), vId(other.vId) {
-}
+hdf4cpp::HdfItem::HdfItem(HdfItemBase *item, int32 sId, int32 vId) : HdfObject(item),
+                                                                    item(item),
+                                                                    sId(sId),
+                                                                    vId(vId) {}
+hdf4cpp::HdfItem::HdfItem(HdfItem&& other) : HdfObject(other.getType(), other.getClassType()),
+                                             item(std::move(other.item)),
+                                             sId(other.sId),
+                                             vId(other.vId) {}
 hdf4cpp::HdfItem& hdf4cpp::HdfItem::operator=(HdfItem&& it) {
     item = std::move(it.item);
     return *this;
 }
 std::vector<int32> hdf4cpp::HdfItem::getDims() {
-    if(isValid()) {
-        return item->getDims();
-    } else {
-        return std::vector<int32>();
-    }
+    return item->getDims();
 }
 hdf4cpp::HdfAttribute hdf4cpp::HdfItem::getAttribute(const std::string &name) const {
     return item->getAttribute(name);
 }
 hdf4cpp::Type hdf4cpp::HdfItem::getType() const {
-    if(isValid()) {
-        return item->getType();
-    } else {
-        return NONE;
-    }
+    return item->getType();
 }
 std::string hdf4cpp::HdfItem::getName() const {
-    if(isValid()) {
-        return item->getName();
-    } else {
-        return std::string();
-    }
-}
-bool hdf4cpp::HdfItem::isValid() const {
-    return item && item->isValid();
+    return item->getName();
 }
 intn hdf4cpp::HdfItem::size() const {
-    if(isValid()) {
-        return item->size();
-    } else {
-        return FAIL;
-    }
+    return item->size();
 }
 hdf4cpp::HdfItem::Iterator hdf4cpp::HdfItem::begin() const {
-    return Iterator(sId, vId, item->getId(), 0);
+    return Iterator(sId, vId, item->getId(), 0, getType());
 }
 hdf4cpp::HdfItem::Iterator hdf4cpp::HdfItem::end() const {
-    int32 size = Vntagrefs(item->getId());
-    if(size == FAIL) {
-        return Iterator(sId, vId, item->getId(), 0);
-    } else {
-        return Iterator(sId, vId, item->getId(), size);
+    switch(item->getType()) {
+        case VGROUP: {
+            int32 size = Vntagrefs(item->getId());
+            return Iterator(sId, vId, item->getId(), size, getType());
+        }
+        default: {
+            return Iterator(sId, vId, item->getId(), 0, getType());
+        }
     }
 }

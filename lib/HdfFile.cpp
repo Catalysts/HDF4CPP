@@ -7,12 +7,17 @@
 
 #include <hdf4cpp/HdfDefines.h>
 #include <hdf4cpp/HdfFile.h>
+#include <hdf4cpp/HdfException.h>
 
 
-
-hdf4cpp::HdfFile::HdfFile(const std::string& path) {
+hdf4cpp::HdfFile::HdfFile(const std::string& path) : HdfObject(HFILE, FILE) {
     sId = SDstart(path.c_str(), DFACC_READ);
     vId = Hopen(path.c_str(), DFACC_READ, 0);
+
+    if(sId == FAIL || vId == FAIL) {
+        throw HdfException(getType(), getClassType(), INVALID_ID);
+    }
+
     Vstart(vId);
 
     int32 loneSize = Vlone(vId, nullptr, 0);
@@ -29,7 +34,7 @@ hdf4cpp::HdfFile::HdfFile(const std::string& path) {
         loneRefs.push_back(std::pair<int32, Type>(ref, VDATA));
     }
 }
-hdf4cpp::HdfFile::HdfFile(HdfFile&& file) {
+hdf4cpp::HdfFile::HdfFile(HdfFile&& file) : HdfObject(file.getType(), file.getClassType()) {
     sId = file.sId;
     vId = file.vId;
     loneRefs = file.loneRefs;
@@ -38,11 +43,13 @@ hdf4cpp::HdfFile::HdfFile(HdfFile&& file) {
 }
 hdf4cpp::HdfFile& hdf4cpp::HdfFile::operator=(HdfFile&& file) {
     destroy();
+    setType(file.getType());
+    setClassType(file.getClassType());
     sId = file.sId;
     vId = file.vId;
     loneRefs = file.loneRefs;
     file.sId = file.vId = FAIL;
-    loneRefs.clear();
+    file.loneRefs.clear();
     return *this;
 }
 void hdf4cpp::HdfFile::destroy() {
@@ -52,6 +59,12 @@ void hdf4cpp::HdfFile::destroy() {
 }
 hdf4cpp::HdfFile::~HdfFile() {
     destroy();
+}
+int32 hdf4cpp::HdfFile::getSId() const {
+    return sId;
+}
+int32 hdf4cpp::HdfFile::getVId() const {
+    return vId;
 }
 int32 hdf4cpp::HdfFile::getDatasetId(const std::string &name) const {
     int32 index = SDnametoindex(sId, name.c_str());
@@ -72,7 +85,7 @@ hdf4cpp::HdfItem hdf4cpp::HdfFile::get(const std::string& name) const {
         if(id == FAIL) {
             id = getDataId(name);
             if(id == FAIL) {
-                return HdfItem(nullptr, sId, vId);
+                raiseException(INVALID_ID);
             }
             return HdfItem(new HdfDataItem(id), sId, vId);
         }
@@ -83,13 +96,12 @@ hdf4cpp::HdfItem hdf4cpp::HdfFile::get(const std::string& name) const {
 std::vector<int32> hdf4cpp::HdfFile::getDatasetIds(const std::string &name) const {
     std::vector<int32> ids;
     char nameDataset[MAX_NAME_LENGTH];
-    int32 datasets, attrs;
-    SDfileinfo(sId, &datasets, &attrs);
+    int32 datasets, waste;
+    SDfileinfo(sId, &datasets, &waste);
     for(int32 i = 0; i < datasets; ++i) {
         int32 id = SDselect(sId, i);
-        int32 rank, dimSize, nt, nAttr;
-        SDgetinfo(id, nameDataset, &rank, &dimSize, &nt, &nAttr);
-        if(name == std::string(nameDataset)) {
+        SDgetinfo(id, nameDataset, nullptr, nullptr, nullptr, nullptr);
+        if(id != FAIL && name == std::string(nameDataset)) {
             ids.push_back(id);
         } else {
             SDendaccess(id);
@@ -128,9 +140,6 @@ std::vector<hdf4cpp::HdfItem> hdf4cpp::HdfFile::getAll(const std::string& name) 
 }
 hdf4cpp::HdfAttribute hdf4cpp::HdfFile::getAttribute(const std::string &name) {
     return HdfAttribute(new HdfDatasetAttribute(sId, name));
-}
-bool hdf4cpp::HdfFile::isValid() const {
-    return sId != FAIL || vId != FAIL;
 }
 hdf4cpp::HdfFile::Iterator hdf4cpp::HdfFile::begin() const {
     return Iterator(this, 0);

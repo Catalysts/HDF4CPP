@@ -15,7 +15,7 @@ hdf4cpp::HdfFile::HdfFile(const std::string& path) : HdfObject(HFILE, FILE) {
     vId = Hopen(path.c_str(), DFACC_READ, 0);
 
     if(sId == FAIL || vId == FAIL) {
-        throw HdfException(getType(), getClassType(), INVALID_ID);
+        raiseException(INVALID_ID);
     }
 
     Vstart(vId);

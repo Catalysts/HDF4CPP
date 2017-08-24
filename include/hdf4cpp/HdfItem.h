@@ -6,7 +6,7 @@
 #define HDF4CPP_HDFITEM_H
 
 #include <hdf4cpp/HdfDefines.h>
-#include <hdf4cpp/HdfAttribute.h>
+#include <hdf4cpp/HdfAttribute_priv.h>
 #include <hdf4cpp/HdfException.h>
 #include <hdf4cpp/HdfDestroyer.h>
 
@@ -26,7 +26,7 @@ struct Range {
     Range(int32 begin = 0, int32 quantity = 0, int32 stride = 1) : begin(begin), quantity(quantity), stride(stride) {}
 
     intn size() const {
-        if(!stride) {
+        if (!stride) {
             return FAIL;
         }
         return quantity / stride;
@@ -34,24 +34,25 @@ struct Range {
 
     bool check(const int32& dim) const {
         return begin >= 0 ||
-               begin < dim ||
-               quantity >= 0 ||
-               begin + quantity <= dim ||
-               stride > 0;
+            begin < dim ||
+            quantity >= 0 ||
+            begin + quantity <= dim ||
+            stride > 0;
     }
 
     static void fill(std::vector<Range>& ranges, const std::vector<int32>& dims) {
-        for(size_t i = ranges.size(); i < dims.size(); ++i) {
+        for (size_t i = ranges.size(); i < dims.size(); ++i) {
             ranges.push_back(Range(0, dims[i]));
         }
     }
 };
 
+
 class HdfItemBase : public HdfObject {
-public:
+  public:
 
     HdfItemBase(int32 id, const Type& type, const HdfDestroyerChain& chain) : HdfObject(type, ITEM, chain), id(id) {
-        if(id == FAIL) {
+        if (id == FAIL) {
             raiseException(INVALID_ID);
         }
     }
@@ -64,14 +65,14 @@ public:
 
     virtual HdfAttribute getAttribute(const std::string& name) const = 0;
 
-protected:
+  protected:
     int32 id;
 
     virtual int32 getDataType() const = 0;
 };
 
 class HdfDatasetItem : public HdfItemBase {
-public:
+  public:
     HdfDatasetItem(int32 id, const HdfDestroyerChain& chain);
     ~HdfDatasetItem();
 
@@ -81,19 +82,20 @@ public:
     intn size() const;
     HdfAttribute getAttribute(const std::string& name) const;
 
-    template <class T> void read(std::vector<T>& dest, std::vector<Range>& ranges) {
+    template <class T>
+    void read(std::vector<T>& dest, std::vector<Range>& ranges) {
         std::vector<int32> dims = getDims();
         Range::fill(ranges, dims);
         intn length = 1;
-        for(size_t i = 0; i < ranges.size(); ++i) {
-            if(!ranges[i].check(dims[i])) {
+        for (size_t i = 0; i < ranges.size(); ++i) {
+            if (!ranges[i].check(dims[i])) {
                 raiseException(INVALID_RANGES);
             }
             length *= ranges[i].size();
         }
         auto it = typeSizeMap.find(getDataType());
-        if(it != typeSizeMap.end()) {
-            if((size_t) it->second != sizeof(T)) {
+        if (it != typeSizeMap.end()) {
+            if ((size_t)it->second != sizeof(T)) {
                 raiseException(BUFFER_SIZE_NOT_ENOUGH);
             }
         } else {
@@ -101,27 +103,28 @@ public:
         }
         dest.resize(length);
         std::vector<int32> start, quantity, stride;
-        for(const auto& range : ranges) {
+        for (const auto& range : ranges) {
             start.push_back(range.begin);
             quantity.push_back(range.quantity);
             stride.push_back(range.stride);
         }
 
-        if(SDreaddata(id, start.data(), stride.data(), quantity.data(), dest.data()) == FAIL) {
+        if (SDreaddata(id, start.data(), stride.data(), quantity.data(), dest.data()) == FAIL) {
             raiseException(STATUS_RETURN_FAIL);
         }
     }
 
-    template <class T> void read(std::vector<T>& dest) {
+    template <class T>
+    void read(std::vector<T>& dest) {
         std::vector<int32> dims = getDims();
         std::vector<Range> ranges;
-        for(const auto& dim : dims) {
+        for (const auto& dim : dims) {
             ranges.push_back(Range(0, dim));
         }
         read(dest, ranges);
     }
 
-private:
+  private:
     intn _size;
     int32 dataType;
     std::string name;
@@ -131,7 +134,7 @@ private:
 };
 
 class HdfGroupItem : public HdfItemBase {
-public:
+  public:
     HdfGroupItem(int32 id, const HdfDestroyerChain& chain);
     ~HdfGroupItem();
 
@@ -142,14 +145,14 @@ public:
 
     HdfAttribute getAttribute(const std::string& name) const;
 
-private:
+  private:
     std::string name;
 
     int32 getDataType() const;
 };
 
 class HdfDataItem : public HdfItemBase {
-public:
+  public:
     HdfDataItem(int32 id, const HdfDestroyerChain& chain);
 
     ~HdfDataItem();
@@ -162,10 +165,10 @@ public:
 
     intn size() const;
 
-    HdfAttribute getAttribute(const std::string &name) const;
+    HdfAttribute getAttribute(const std::string& name) const;
 
-    template<class T>
-    void read(std::vector<T> &dest, const std::string &field, int32 records) {
+    template <class T>
+    void read(std::vector<T>& dest, const std::string& field, int32 records) {
         if (!records) {
             records = nrRecords;
         }
@@ -174,7 +177,7 @@ public:
             raiseException(STATUS_RETURN_FAIL);
         }
 
-        int32 fieldSize = VSsizeof(id, (char *) field.c_str());
+        int32 fieldSize = VSsizeof(id, (char*)field.c_str());
         if (sizeof(T) < fieldSize) {
             raiseException(BUFFER_SIZE_NOT_ENOUGH);
         }
@@ -193,24 +196,24 @@ public:
         }
     }
 
-
-    template <class T> void read(std::vector<std::vector<T> >& dest, const std::string& field, int32 records) {
-        if(!records) {
+    template <class T>
+    void read(std::vector<std::vector<T> >& dest, const std::string& field, int32 records) {
+        if (!records) {
             records = nrRecords;
         }
 
-        if(VSsetfields(id, field.c_str()) == FAIL) {
+        if (VSsetfields(id, field.c_str()) == FAIL) {
             raiseException(STATUS_RETURN_FAIL);
         }
 
-        int32 fieldSize = VSsizeof(id, (char *) field.c_str());
-        if(fieldSize % sizeof(T) != 0) {
+        int32 fieldSize = VSsizeof(id, (char*)field.c_str());
+        if (fieldSize % sizeof(T) != 0) {
             raiseException(BUFFER_SIZE_NOT_DIVISIBLE);
         }
 
         size_t size = records * fieldSize;
         std::vector<uint8> buff(size);
-        if(VSread(id, buff.data(), records, interlace) == FAIL) {
+        if (VSread(id, buff.data(), records, interlace) == FAIL) {
             raiseException(STATUS_RETURN_FAIL);
         }
 
@@ -222,9 +225,9 @@ public:
         VSfpack(id, _HDF_VSUNPACK, field.c_str(), buff.data(), size, records, field.c_str(), buffptrs);
         int i = 0;
         int j;
-        while(i < records) {
+        while (i < records) {
             j = 0;
-            while(j < divided) {
+            while (j < divided) {
                 dest[i][j] = linearDest[i * divided + j];
                 ++j;
             }
@@ -232,7 +235,7 @@ public:
         }
     }
 
-private:
+  private:
     intn _size;
     std::string name;
 
@@ -301,6 +304,8 @@ public:
     Iterator end() const;
 
 private:
+    void read_sdata_internal(void* dest, size_t length, size_t type_siye);
+
     std::unique_ptr<HdfItemBase> item;
     int32 sId;
     int32 vId;

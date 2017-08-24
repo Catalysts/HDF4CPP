@@ -9,7 +9,8 @@ set(CMAKE_CXX_STANDARD 11)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_POSITION_INDEPENDENT_CODE ON)
 
-find_package(HDF4)
+find_package(HDF4 REQUIRED)
+
 add_library(hdf4cpp
         lib/HdfFile.cpp
         lib/HdfItem.cpp
@@ -17,7 +18,7 @@ add_library(hdf4cpp
         lib/HdfException.cpp
         include/hdf4cpp/HdfObject.h
         include/hdf4cpp/HdfDestroyer.h
-        )
+        include/hdf4cpp/hdf.h include/hdf4cpp/HdfAttribute.h)
 
 target_include_directories(hdf4cpp
         PUBLIC

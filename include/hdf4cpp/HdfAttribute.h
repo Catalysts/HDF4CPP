@@ -1,99 +1,18 @@
 //
-// Created by patrik on 11.08.17.
+// Created by patrik on 24.08.17.
 //
+#ifndef GRASP_SEGMENTER_HDFATTRIBUTE_H_H
+#define GRASP_SEGMENTER_HDFATTRIBUTE_H_H
 
-#ifndef HDF4CPP_HDFATTRIBUTE_H
-#define HDF4CPP_HDFATTRIBUTE_H
-#include <hdf4cpp/HdfException.h>
-#include <hdf4cpp/HdfObject.h>
-#include <hdf4cpp/HdfDestroyer.h>
-
-#include <hdf/hdf.h>
-#include <hdf/mfhdf.h>
-#include <string>
-#include <vector>
-#include <map>
-#include <memory>
+#include "HdfObject.h"
 
 namespace hdf4cpp {
 
-class HdfAttributeBase : public HdfObject {
-public:
-    HdfAttributeBase(int32 id, int32 index, Type type, const HdfDestroyerChain& chain) : HdfObject(type, ATTRIBUTE, chain), id(id), index(index) {
-        if(id == FAIL || index == FAIL) {
-            raiseException(INVALID_ID);
-        }
-    }
-    virtual ~HdfAttributeBase() {}
-
-    virtual intn size() const = 0;
-
-    template <class T> void get(std::vector<T> &dest) {
-        intn length = size();
-        auto it = typeSizeMap.find(getDataType());
-        if (it != typeSizeMap.end()) {
-            if ((size_t) it->second != sizeof(T)) {
-                raiseException(BUFFER_SIZE_NOT_ENOUGH);
-            }
-            dest.resize(length);
-            get(dest.data());
-        } else {
-            raiseException(INVALID_DATA_TYPE);
-        }
-    }
-
-protected:
-    int32 id;
-    int32 index;
-
-    virtual void get(void *dest) = 0;
-    virtual int32 getDataType() const = 0;
-};
-
-class HdfDatasetAttribute : public HdfAttributeBase {
-public:
-    HdfDatasetAttribute(int32 id, const std::string& name, const HdfDestroyerChain& chain);
-
-    intn size() const;
-
-private:
-    intn _size;
-    int32 dataType;
-
-    void get(void *dest);
-    int32 getDataType() const;
-};
-
-class HdfGroupAttribute : public HdfAttributeBase {
-public:
-    HdfGroupAttribute(int32 id, const std::string& name, const HdfDestroyerChain& chain);
-
-    intn size() const;
-
-private:
-    intn _size;
-    int32 dataType;
-
-    void get(void *dest);
-    int32 getDataType() const;
-};
-
-class HdfDataAttribute : public HdfAttributeBase {
-public:
-    HdfDataAttribute(int32 id, const std::string& name, const HdfDestroyerChain& chain);
-
-    intn size() const;
-
-private:
-    intn _size;
-    int32 dataType;
-    void get(void *dest);
-    int32 getDataType() const;
-};
+class HdfAttributeBase;
 
 class HdfAttribute : public HdfObject {
-public:
-    HdfAttribute(HdfAttributeBase *attribute) : HdfObject(attribute), attribute(attribute) {}
+  public:
+    HdfAttribute(HdfAttributeBase *attribute);
     HdfAttribute(const HdfAttribute&) = delete;
     HdfAttribute(HdfAttribute&& attr);
     HdfAttribute& operator=(const HdfAttribute& attribute) = delete;
@@ -103,13 +22,24 @@ public:
 
     intn size() const;
     template <class T> void get(std::vector<T> &dest) {
-        attribute->get(dest);
+        intn length = size();
+        auto it = typeSizeMap.find(getDataType());
+        if (it != typeSizeMap.end()) {
+            if ((size_t)it->second != sizeof(T)) {
+                raiseException(BUFFER_SIZE_NOT_ENOUGH);
+            }
+            dest.resize(length);
+            get_internal(dest.data());
+        } else {
+            raiseException(INVALID_DATA_TYPE);
+        }
     }
 
-private:
+  private:
+    void get_internal(void *dest);
+    int32 getDataType() const;
     std::unique_ptr<HdfAttributeBase> attribute;
 };
-
 }
 
-#endif //HDF4CPP_HDFATTRIBUTE_H
+#endif //GRASP_SEGMENTER_HDFATTRIBUTE_H_H

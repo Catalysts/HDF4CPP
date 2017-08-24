@@ -3,8 +3,10 @@
 //
 
 #include <hdf4cpp/HdfDefines.h>
-#include <hdf4cpp/HdfAttribute.h>
+#include <hdf4cpp/HdfAttribute_priv.h>
 #include <stdexcept>
+
+using namespace hdf4cpp;
 
 hdf4cpp::HdfDatasetAttribute::HdfDatasetAttribute(int32 id, const std::string& name, const HdfDestroyerChain& chain) : HdfAttributeBase(id, SDfindattr(id, name.c_str()), SDATA, chain) {
     char waste[MAX_NAME_LENGTH];
@@ -86,4 +88,13 @@ hdf4cpp::Type hdf4cpp::HdfAttribute::getType() const {
 }
 intn hdf4cpp::HdfAttribute::size() const {
     return attribute->size();
+}
+HdfAttribute::HdfAttribute(HdfAttributeBase* attribute)  : HdfObject(attribute), attribute(attribute) {
+
+}
+int32 HdfAttribute::getDataType() const {
+    return attribute->getDataType();
+}
+void HdfAttribute::get_internal(void* dest) {
+    attribute->get(dest);
 }

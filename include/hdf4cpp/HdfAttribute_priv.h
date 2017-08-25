@@ -2,8 +2,8 @@
 // Created by patrik on 11.08.17.
 //
 
-#ifndef HDF4CPP_HDFATTRIBUTE_H
-#define HDF4CPP_HDFATTRIBUTE_H
+#ifndef HDF4CPP_HDFATTRIBUTE_PRIV_H
+#define HDF4CPP_HDFATTRIBUTE_PRIV_H
 #include "HdfAttribute.h"
 #include <hdf4cpp/HdfException.h>
 #include <hdf4cpp/HdfObject.h>
@@ -88,4 +88,4 @@ private:
 
 }
 
-#endif //HDF4CPP_HDFATTRIBUTE_H
+#endif //HDF4CPP_HDFATTRIBUTE_PRIV_H

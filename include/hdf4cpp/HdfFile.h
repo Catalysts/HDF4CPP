@@ -2,8 +2,8 @@
 // Created by patrik on 10.08.17.
 //
 
-#ifndef GRASP_SEGMENTER_HDFFILE_H
-#define GRASP_SEGMENTER_HDFFILE_H
+#ifndef HDF4CPP_HDFFILE_H
+#define HDF4CPP_HDFFILE_H
 
 #include <string>
 #include <vector>
@@ -107,4 +107,4 @@ private:
 
 }
 
-#endif //GRASP_SEGMENTER_HDFFILE_H
+#endif //HDF4CPP_HDFFILE_H

@@ -2,8 +2,8 @@
 // Created by patrik on 23.08.17.
 //
 
-#ifndef GRASP_SEGMENTER_HDFDESTROYER_H
-#define GRASP_SEGMENTER_HDFDESTROYER_H
+#ifndef HDF4CPP_HDFDESTROYER_H
+#define HDF4CPP_HDFDESTROYER_H
 
 #include <boost/shared_ptr.hpp>
 #include <hdf/hdf.h>
@@ -80,4 +80,4 @@ typedef std::vector<HdfDestroyer> HdfDestroyerChain;
 
 }
 
-#endif //GRASP_SEGMENTER_HDFDESTROYER_H
+#endif //HDF4CPP_HDFDESTROYER_H

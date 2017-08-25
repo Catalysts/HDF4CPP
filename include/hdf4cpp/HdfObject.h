@@ -2,8 +2,8 @@
 // Created by patrik on 23.08.17.
 //
 
-#ifndef GRASP_SEGMENTER_HDFOBJECT_H
-#define GRASP_SEGMENTER_HDFOBJECT_H
+#ifndef HDF4CPP_HDFOBJECT_H
+#define HDF4CPP_HDFOBJECT_H
 
 #include <hdf4cpp/HdfDefines.h>
 #include <hdf4cpp/HdfException.h>
@@ -44,4 +44,4 @@ class HdfObject {
 
 
 
-#endif //GRASP_SEGMENTER_HDFOBJECT_H
+#endif //HDF4CPP_HDFOBJECT_H

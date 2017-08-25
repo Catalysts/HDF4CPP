@@ -1,8 +1,8 @@
 //
 // Created by patrik on 24.08.17.
 //
-#ifndef GRASP_SEGMENTER_HDFATTRIBUTE_H_H
-#define GRASP_SEGMENTER_HDFATTRIBUTE_H_H
+#ifndef HDF4CPP_HDFATTRIBUTE_H
+#define HDF4CPP_HDFATTRIBUTE_H
 
 #include "HdfObject.h"
 
@@ -42,4 +42,4 @@ class HdfAttribute : public HdfObject {
 };
 }
 
-#endif //GRASP_SEGMENTER_HDFATTRIBUTE_H_H
+#endif //HDF4CPP_HDFATTRIBUTE_H

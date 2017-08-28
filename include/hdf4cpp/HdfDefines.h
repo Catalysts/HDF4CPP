@@ -1,6 +1,5 @@
-//
-// Created by patrik on 11.08.17.
-//
+/// \copyright Copyright (c) Catalysts GmbH
+/// \author Patrik Kovacs, Catalysts GmbH
 
 #ifndef HDF4CPP_HDFDEFINES_H
 #define HDF4CPP_HDFDEFINES_H

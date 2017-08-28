@@ -1,9 +1,9 @@
-//
-// Created by patrik on 11.08.17.
-//
+/// \copyright Copyright (c) Catalysts GmbH
+/// \author Patrik Kovacs, Catalysts GmbH
 
 #ifndef HDF4CPP_HDFATTRIBUTE_PRIV_H
 #define HDF4CPP_HDFATTRIBUTE_PRIV_H
+
 #include <hdf4cpp/HdfAttribute.h>
 #include <hdf4cpp/HdfException.h>
 #include <hdf4cpp/HdfObject.h>

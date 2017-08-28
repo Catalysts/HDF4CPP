@@ -1,6 +1,5 @@
-//
-// Created by patrik on 22.08.17.
-//
+/// \copyright Copyright (c) Catalysts GmbH
+/// \author Patrik Kovacs, Catalysts GmbH
 
 #include <hdf4cpp/HdfException.h>
 

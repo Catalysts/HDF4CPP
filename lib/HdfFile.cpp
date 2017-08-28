@@ -1,6 +1,5 @@
-//
-// Created by patrik on 10.08.17.
-//
+/// \copyright Copyright (c) Catalysts GmbH
+/// \author Patrik Kovacs, Catalysts GmbH
 
 #include <hdf/mfhdf.h>
 #include <stdexcept>

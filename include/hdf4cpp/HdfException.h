@@ -9,22 +9,6 @@
 
 namespace hdf4cpp {
 
-
-const std::string exceptionMessagePrefix = "HDF4CPP: ";
-
-const std::map<ExceptionType, std::string> exceptionTypeMap = {
-    {INVALID_ID, "cannot construct object, the id is invalid"},
-    {INVALID_OPERATION, "operation not supported for this type"},
-    {INVALID_NAME, "invalid item name"},
-    {OUT_OF_RANGE, "out of range, cannot access element (usually thrown when an iterator points to an inaccessible address)"},
-    {BUFFER_SIZE_NOT_ENOUGH, "not enough buffer size (usually thrown when the type of the vector in which we read the data is too small)"},
-    {BUFFER_SIZE_NOT_DIVISIBLE, "buffer cannot be splited up (usually thrown when the size of the readable data is not divisible by the type size of the vector"},
-    {INVALID_RANGES, "the given ranges are invalids (usually thrown when the ranges is negative or it is bigger than the dimension of tha data)"},
-    {STATUS_RETURN_FAIL, "hdf routine failed"},
-    {INVALID_DATA_TYPE, "the type of the data in the hdf item is not supported"},
-    {OTHER, "exception thrown"},
-};
-
 class HdfException : public std::exception {
   public:
     HdfException(const Type& type, const ClassType& classType, const std::string& message) : type(type),
@@ -35,16 +19,28 @@ class HdfException : public std::exception {
                                                                                                      classType(classType),
                                                                                                      exceptionType(exceptionType),
                                                                                                      message(exceptionMessagePrefix + exceptionTypeMap.at(exceptionType)) {}
+    /// Get the Type of the object which threw the exception.
     Type getType() const noexcept;
+    /// Get the ClassType of the object which threw the exception.
     ClassType getClassType() const noexcept;
+    /// Get the ExceptionType of the object which threw the exception.
     ExceptionType getExceptionType() const noexcept;
+    /// Get the message of the exception.
     std::string getMessage() const noexcept;
-
+    /// Get the exception message.
+    /// Returns the same string (but in c string type) which is returned by the getMessage() function.
     const char *what() const noexcept {
         return message.data();
     }
 
   private:
+
+    /// Exception message prefix
+    static const std::string exceptionMessagePrefix;
+    /// Associates the exception type with a specific message
+    /// \note All the exception types must have a message associated with
+    static const std::map<ExceptionType, std::string> exceptionTypeMap;
+
     Type type;
     ClassType classType;
     ExceptionType exceptionType;

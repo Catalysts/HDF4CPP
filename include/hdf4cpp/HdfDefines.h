@@ -12,12 +12,31 @@
 #define MAX_NAME_LENGTH 1000
 
 namespace hdf4cpp {
-
+/// \enum Type
+/// The type of the HdfObject.
+/// \var HFILE
+/// file type
+/// \var SDATA
+/// SData type
+/// \var VGROUP
+/// VGroup type
+/// \var VDATA
+/// VData type
 enum Type {HFILE, SDATA, VGROUP, VDATA};
 
+/// \enum ClassType
+/// What kind of object it represents:
+/// \var FILE
+/// file
+/// \var ITEM
+/// item
+/// \var ATTRIBUTE
+/// attribute
+/// \var ITERATOR
+/// iterator
 enum ClassType {FILE, ITEM, ATTRIBUTE, ITERATOR};
 
-
+/// \enum ExceptionType The type of the HdfException
 enum ExceptionType {
     INVALID_ID,
     INVALID_OPERATION,

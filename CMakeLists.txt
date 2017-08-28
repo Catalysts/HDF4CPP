@@ -11,14 +11,32 @@ set(CMAKE_POSITION_INDEPENDENT_CODE ON)
 
 find_package(HDF4 REQUIRED)
 
+find_package(Doxygen)
+if (DOXYGEN_FOUND)
+    configure_file(Doxyfile_user.in ${PROJECT_BINARY_DIR}/Doxyfile_user @ONLY IMMEDIATE)
+
+    add_custom_target(docs_user
+            COMMAND ${DOXYGEN_EXECUTABLE} ${PROJECT_BINARY_DIR}/Doxyfile_user
+            SOURCES ${PROJECT_BINARY_DIR}/Doxyfile_user
+            )
+
+    configure_file(Doxyfile_all.in ${PROJECT_BINARY_DIR}/Doxyfile_all @ONLY IMMEDIATE)
+
+    add_custom_target(docs_all
+            COMMAND ${DOXYGEN_EXECUTABLE} ${PROJECT_BINARY_DIR}/Doxyfile_all
+            SOURCES ${PROJECT_BINARY_DIR}/Doxyfile_all
+            )
+else ()
+    message(WARNING "Doxygen not found")
+endif()
+
 add_library(hdf4cpp
         lib/HdfFile.cpp
         lib/HdfItem.cpp
         lib/HdfAttribute.cpp
         lib/HdfException.cpp
         include/hdf4cpp/HdfObject.h
-        include/hdf4cpp/HdfDestroyer.h
-        include/hdf4cpp/HdfAttribute.h)
+        )
 
 target_include_directories(hdf4cpp
         PUBLIC

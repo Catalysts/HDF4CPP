@@ -9,12 +9,13 @@
 #include <vector>
 
 #include <hdf4cpp/HdfObject.h>
-#include <hdf4cpp/HdfItem.h>
-#include <hdf4cpp/HdfAttribute.h>
-#include <hdf4cpp/HdfDestroyer.h>
 
 namespace hdf4cpp {
 
+class HdfItem;
+class HdfAttribute;
+
+/// Opens an hdf file and provides operations with it
 class HdfFile : public HdfObject {
   public:
     HdfFile(const std::string& path);
@@ -27,10 +28,18 @@ class HdfFile : public HdfObject {
     int32 getSId() const;
     int32 getVId() const;
 
+    /// \returns an item from the file with the given name
+    /// \param name the name of the item
+    /// \note: If there are multiple items with the same name then the first will be returned
     HdfItem get(const std::string& name) const;
+
+    /// \returns all the items from the file with the given name
+    /// \param name the name of the item(s)
     std::vector<HdfItem> getAll(const std::string& name) const;
 
-    HdfAttribute getAttribute(const std::string& name);
+    /// \returns the attribute with the given name
+    /// \param name the name of the attribute
+    HdfAttribute getAttribute(const std::string& name) const;
 
     class Iterator;
 
@@ -44,8 +53,7 @@ class HdfFile : public HdfObject {
     int32 getDataId(const std::string& name) const;
 
     std::vector<int32> getDatasetIds(const std::string& name) const;
-    std::vector<int32> getGroupIds(const std::string& name) const;
-    std::vector<int32> getDataIds(const std::string& name) const;
+    std::vector<int32> getGroupDataIds(const std::string& name) const;
 
     int32 sId;
     int32 vId;
@@ -53,6 +61,7 @@ class HdfFile : public HdfObject {
     std::vector<std::pair<int32, Type> > loneRefs;
 };
 
+/// HdfFile iterator, gives the possibility to iterate over the items in the file
 class HdfFile::Iterator : public HdfObject, public std::iterator<std::bidirectional_iterator_tag, HdfItem> {
 public:
     Iterator(const HdfFile* file, int32 index, const HdfDestroyerChain& chain) : HdfObject(HFILE, ITERATOR, chain),
@@ -81,25 +90,7 @@ public:
         return it;
     }
 
-    HdfItem operator*() {
-        if(index < 0 || index >= (int) file->loneRefs.size()) {
-            raiseException(OUT_OF_RANGE);
-        }
-        int32 ref = file->loneRefs[index].first;
-        switch(file->loneRefs[index].second) {
-            case VGROUP: {
-                int32 id = Vattach(file->vId, ref, "r");
-                return HdfItem(new HdfGroupItem(id, chain), file->sId, file->vId);
-            }
-            case VDATA: {
-                int32 id = VSattach(file->vId, ref, "r");
-                return HdfItem(new HdfDataItem(id, chain), file->sId, file->vId);
-            }
-            default: {
-                raiseException(OUT_OF_RANGE);
-            }
-        }
-    }
+    HdfItem operator*();
 private:
     const HdfFile *file;
     int32 index;

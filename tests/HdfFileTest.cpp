@@ -4,6 +4,8 @@
 
 #include <gtest/gtest.h>
 #include <hdf4cpp/HdfFile.h>
+#include <hdf4cpp/HdfItem.h>
+#include <hdf4cpp/HdfAttribute_priv.h>
 
 using namespace hdf4cpp;
 
@@ -110,7 +112,7 @@ TEST_F(HdfFileTest, ReadInvalidGroupAttribute) {
 
 TEST_F(HdfFileTest, GetAllDatsetsWithTheSameName) {
     std::vector<HdfItem> items = file.getAll("DoubleDataset");
-    ASSERT_EQ(items.size(), 2);
+    ASSERT_EQ(items.size(), 4);
     std::vector<int32> vec;
     items[0].read(vec);
     ASSERT_EQ(vec, std::vector<int32>({0}));

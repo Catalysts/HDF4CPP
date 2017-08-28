@@ -7,6 +7,8 @@
 
 #include <hdf4cpp/HdfDefines.h>
 #include <hdf4cpp/HdfFile.h>
+#include <hdf4cpp/HdfItem.h>
+#include <hdf4cpp/HdfAttribute_priv.h>
 #include <hdf4cpp/HdfException.h>
 
 
@@ -20,7 +22,9 @@ hdf4cpp::HdfFile::HdfFile(const std::string& path) : HdfObject(HFILE, FILE) {
 
     Vstart(vId);
 
-    chain.push_back(new HdfFileDestroyer(sId, vId));
+    chain.pushBack(new HdfDestroyer(&SDend, sId));
+    chain.pushBack(new HdfDestroyer(&Vfinish, vId));
+    chain.pushBack(new HdfDestroyer(&Hclose, vId));
 
     int32 loneSize = Vlone(vId, nullptr, 0);
     std::vector<int32> refs((size_t) loneSize);
@@ -82,11 +86,11 @@ hdf4cpp::HdfItem hdf4cpp::HdfFile::get(const std::string& name) const {
             if(id == FAIL) {
                 raiseException(INVALID_ID);
             }
-            return HdfItem(new HdfDataItem(id, chain), sId, vId);
+            return HdfItem(new HdfItem::HdfDataItem(id, chain), sId, vId);
         }
-        return HdfItem(new HdfGroupItem(id, chain), sId, vId);
+        return HdfItem(new HdfItem::HdfGroupItem(id, chain), sId, vId);
     }
-    return HdfItem(new HdfDatasetItem(id, chain), sId, vId);
+    return HdfItem(new HdfItem::HdfDatasetItem(id, chain), sId, vId);
 }
 std::vector<int32> hdf4cpp::HdfFile::getDatasetIds(const std::string &name) const {
     std::vector<int32> ids;
@@ -104,14 +108,14 @@ std::vector<int32> hdf4cpp::HdfFile::getDatasetIds(const std::string &name) cons
     }
     return ids;
 }
-std::vector<int32> hdf4cpp::HdfFile::getGroupIds(const std::string &name) const {
+std::vector<int32> hdf4cpp::HdfFile::getGroupDataIds(const std::string &name) const {
     std::vector<int32> ids;
     char nameGroup[MAX_NAME_LENGTH];
     int32 ref = Vgetid(vId, -1);
     while(ref != FAIL) {
         int32 id = Vattach(vId, ref, "r");
         Vgetname(id, nameGroup);
-        if(Visvg(id, ref) && name == std::string(nameGroup)) {
+        if(name == std::string(nameGroup)) {
             ids.push_back(id);
         } else {
             Vdetach(id);
@@ -125,20 +129,39 @@ std::vector<hdf4cpp::HdfItem> hdf4cpp::HdfFile::getAll(const std::string& name) 
     std::vector<int32> ids;
     ids = getDatasetIds(name);
     for(const auto& id : ids) {
-        items.push_back(HdfItem(new HdfDatasetItem(id, chain), sId, vId));
+        items.push_back(HdfItem(new HdfItem::HdfDatasetItem(id, chain), sId, vId));
     }
-    ids = getGroupIds(name);
+    ids = getGroupDataIds(name);
     for(const auto& id : ids) {
-        items.push_back(HdfItem(new HdfGroupItem(id, chain), sId, vId));
+        items.push_back(HdfItem(new HdfItem::HdfGroupItem(id, chain), sId, vId));
     }
     return std::move(items);
 }
-hdf4cpp::HdfAttribute hdf4cpp::HdfFile::getAttribute(const std::string &name) {
-    return HdfAttribute(new HdfDatasetAttribute(sId, name, chain));
+hdf4cpp::HdfAttribute hdf4cpp::HdfFile::getAttribute(const std::string &name) const {
+    return HdfAttribute(new HdfAttribute::HdfDatasetAttribute(sId, name, chain));
 }
 hdf4cpp::HdfFile::Iterator hdf4cpp::HdfFile::begin() const {
     return Iterator(this, 0, chain);
 }
 hdf4cpp::HdfFile::Iterator hdf4cpp::HdfFile::end() const {
     return Iterator(this, (int32) loneRefs.size(), chain);
+}
+hdf4cpp::HdfItem hdf4cpp::HdfFile::Iterator::operator*() {
+    if(index < 0 || index >= (int) file->loneRefs.size()) {
+        raiseException(OUT_OF_RANGE);
+    }
+    int32 ref = file->loneRefs[index].first;
+    switch(file->loneRefs[index].second) {
+        case VGROUP: {
+            int32 id = Vattach(file->vId, ref, "r");
+            return HdfItem(new HdfItem::HdfGroupItem(id, chain), file->sId, file->vId);
+        }
+        case VDATA: {
+            int32 id = VSattach(file->vId, ref, "r");
+            return HdfItem(new HdfItem::HdfDataItem(id, chain), file->sId, file->vId);
+        }
+        default: {
+            raiseException(INVALID_OPERATION);
+        }
+    }
 }

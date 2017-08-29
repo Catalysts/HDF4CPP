@@ -5,8 +5,8 @@
 #ifndef HDF4CPP_HDFDEFINES_H
 #define HDF4CPP_HDFDEFINES_H
 
-#include <hdf/mfhdf.h>
 #include <map>
+#include <mfhdf.h>
 
 #define MAX_DIMENSION 32
 #define MAX_NAME_LENGTH 1000

@@ -4,7 +4,7 @@
 #ifndef HDF4CPP_HDFATTRIBUTE_H
 #define HDF4CPP_HDFATTRIBUTE_H
 
-#include <hdf/hdfi.h>
+#include <hdfi.h>
 #include <hdf4cpp/HdfItem.h>
 #include <hdf4cpp/HdfObject.h>
 
@@ -128,4 +128,4 @@ class HdfAttribute : public HdfObject {
 };
 }
 
-#endif // HDF4CPP_HDFATTRIBUTE_H
+#endif //HDF4CPP_HDFATTRIBUTE_H

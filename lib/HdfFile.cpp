@@ -2,7 +2,7 @@
 /// \author Patrik Kovacs, Catalysts GmbH
 
 
-#include <hdf/mfhdf.h>
+#include <mfhdf.h>
 #include <stdexcept>
 
 #include <hdf4cpp/HdfDefines.h>

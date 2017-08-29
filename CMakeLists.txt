@@ -36,12 +36,18 @@ add_library(hdf4cpp
         lib/HdfAttribute.cpp
         lib/HdfException.cpp
         include/hdf4cpp/HdfObject.h
+		include/hdf4cpp/HdfAttribute.h
+		include/hdf4cpp/HdfAttribute_priv.h
+		include/hdf4cpp/HdfException.h
+		include/hdf4cpp/HdfFile.h
+		include/hdf4cpp/HdfItem.h
+		include/hdf4cpp/HdfDefines.h
         )
 
 target_include_directories(hdf4cpp
         PUBLIC
         include/
-        ${HDF4_INCLUDE_DIRS}
+        ${HDF4_INCLUDE_DIR}
         )
 
 target_link_libraries(hdf4cpp

@@ -10,7 +10,7 @@
 #include <hdf4cpp/HdfFile.h>
 
 #include <algorithm>
-#include <hdf/hdf.h>
+#include <hdf.h>
 #include <map>
 #include <memory>
 #include <vector>

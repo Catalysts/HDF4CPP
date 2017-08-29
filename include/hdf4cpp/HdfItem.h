@@ -275,6 +275,7 @@ class HdfItem : public HdfObject {
                 records = nrRecords;
             }
 
+
             if (VSsetfields(id, field.c_str()) == FAIL) {
                 raiseException(STATUS_RETURN_FAIL);
             }
@@ -286,9 +287,11 @@ class HdfItem : public HdfObject {
 
             size_t size = records * fieldSize;
             std::vector<uint8> buff(size);
+
             if (VSread(id, buff.data(), records, interlace) == FAIL) {
                 raiseException(STATUS_RETURN_FAIL);
             }
+            VSseek(id, 0);
 
             dest.resize(records);
             VOIDP buffptrs[1];
@@ -323,6 +326,7 @@ class HdfItem : public HdfObject {
             if (VSread(id, buff.data(), records, interlace) == FAIL) {
                 raiseException(STATUS_RETURN_FAIL);
             }
+            VSseek(id, 0);
 
             int32 divided = fieldSize / sizeof(T);
             dest.resize(records, std::vector<T>(divided));

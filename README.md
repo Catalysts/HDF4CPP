@@ -140,7 +140,7 @@ for(const auto& char_vec : vec) {
 ```
 
 Note: The library does a type size check, and throws an exception 
-in case of missmatch.
+in case of mismatch.
 
 ### Reading attribute data
 
@@ -153,7 +153,7 @@ attribute.get(vec);
 ```
 
 Note: The library does a type size check, and throws an exception 
-in case of missmatch.
+in case of mismatch.
 
 ## Exception mechanism
 

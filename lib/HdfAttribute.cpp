@@ -2,8 +2,8 @@
 /// \author Patrik Kovacs, Catalysts GmbH
 
 
-#include <hdf4cpp/HdfAttribute_priv.h>
 #include <hdf4cpp/HdfDefines.h>
+#include <hdf4cpp/HdfAttribute.h>
 #include <stdexcept>
 
 using namespace hdf4cpp;

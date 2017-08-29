@@ -5,11 +5,11 @@
 #include <hdf/mfhdf.h>
 #include <stdexcept>
 
-#include <hdf4cpp/HdfAttribute_priv.h>
 #include <hdf4cpp/HdfDefines.h>
 #include <hdf4cpp/HdfException.h>
 #include <hdf4cpp/HdfFile.h>
 #include <hdf4cpp/HdfItem.h>
+#include <hdf4cpp/HdfAttribute.h>
 
 
 hdf4cpp::HdfFile::HdfFile(const std::string &path)

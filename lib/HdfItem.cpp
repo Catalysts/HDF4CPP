@@ -3,10 +3,10 @@
 
 
 #include <hdf/mfhdf.h>
-#include <hdf4cpp/HdfAttribute_priv.h>
 #include <hdf4cpp/HdfFile.h>
 #include <hdf4cpp/HdfItem.h>
 #include <sstream>
+#include <hdf4cpp/HdfAttribute.h>
 
 hdf4cpp::HdfItem::HdfDatasetItem::HdfDatasetItem(int32 id, const HdfDestroyerChain &chain)
     : HdfItemBase(id, SDATA, chain) {

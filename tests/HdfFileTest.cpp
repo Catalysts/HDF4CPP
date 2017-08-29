@@ -3,7 +3,6 @@
 
 
 #include <gtest/gtest.h>
-#include <hdf4cpp/HdfAttribute_priv.h>
 #include <hdf4cpp/HdfFile.h>
 #include <hdf4cpp/HdfItem.h>
 

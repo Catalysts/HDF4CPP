@@ -3,8 +3,7 @@
 
 
 #include <gtest/gtest.h>
-#include <hdf4cpp/HdfFile.h>
-#include <hdf4cpp/HdfItem.h>
+#include <hdf4cpp/hdf.h>
 
 using namespace hdf4cpp;
 

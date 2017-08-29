@@ -83,12 +83,12 @@ class HdfObject {
     }
 
     /// Throws an HdfException by its type
-    virtual void raiseException(const ExceptionType &exceptionType) const {
+	__declspec(noreturn) void raiseException(const ExceptionType &exceptionType) const {
         throw HdfException(type, classType, exceptionType);
     }
 
     /// Thorws an HdfException by its message, the type will be OTHER.
-    virtual void raiseException(const std::string &message) const {
+	__declspec(noreturn) void raiseException(const std::string &message) const {
         throw HdfException(type, classType, message);
     }
 

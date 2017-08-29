@@ -51,7 +51,7 @@ target_include_directories(hdf4cpp
         )
 
 target_link_libraries(hdf4cpp
-        ${HDF4_LIBRARIES}
+		hdf4::mfhdf-static
         )
 
 enable_testing()
@@ -64,7 +64,6 @@ add_executable(hdf4cpp-tests
 target_include_directories(hdf4cpp-tests
         PRIVATE
         ${GTEST_INCLUDE_DIRS}
-        ${hdf4cpp_INCLUDE_DIRS}
         )
 target_link_libraries(hdf4cpp-tests
         ${GTEST_BOTH_LIBRARIES}

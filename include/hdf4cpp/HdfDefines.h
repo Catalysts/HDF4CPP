@@ -8,6 +8,12 @@
 #include <map>
 #include <mfhdf.h>
 
+#ifdef NEEDS_NORETURN
+#define NORETURN __declspec(noreturn)
+#else
+#define NORETURN
+#endif
+
 #define MAX_DIMENSION 32
 #define MAX_NAME_LENGTH 1000
 

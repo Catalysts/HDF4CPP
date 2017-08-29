@@ -28,7 +28,7 @@ if (DOXYGEN_FOUND)
             )
 else ()
     message(WARNING "Doxygen not found")
-endif()
+endif ()
 
 add_library(hdf4cpp
         lib/HdfFile.cpp
@@ -36,12 +36,12 @@ add_library(hdf4cpp
         lib/HdfAttribute.cpp
         lib/HdfException.cpp
         include/hdf4cpp/HdfObject.h
-		include/hdf4cpp/HdfAttribute.h
-		include/hdf4cpp/HdfAttribute_priv.h
-		include/hdf4cpp/HdfException.h
-		include/hdf4cpp/HdfFile.h
-		include/hdf4cpp/HdfItem.h
-		include/hdf4cpp/HdfDefines.h
+        include/hdf4cpp/HdfAttribute.h
+        include/hdf4cpp/HdfAttribute_priv.h
+        include/hdf4cpp/HdfException.h
+        include/hdf4cpp/HdfFile.h
+        include/hdf4cpp/HdfItem.h
+        include/hdf4cpp/HdfDefines.h
         )
 
 target_include_directories(hdf4cpp
@@ -51,8 +51,15 @@ target_include_directories(hdf4cpp
         )
 
 target_link_libraries(hdf4cpp
-		hdf4::mfhdf-static
+        ${HDF4_LIBRARIES}
         )
+
+if (MSVC)
+    target_compile_definitions(hdf4cpp PUBLIC
+            NEEDS_NORETURN
+            )
+endif ()
+
 
 enable_testing()
 find_package(GTest REQUIRED)

@@ -66,6 +66,7 @@ target_link_libraries(hdf4cpp-tests
         hdf4cpp
         )
 
+
 if (NOT DEFINED TEST_DATA_PATH)
     set(TEST_DATA_PATH "${PROJECT_SOURCE_DIR}/tests/test_data/")
     message(STATUS "No path to test data defined, using ${TEST_DATA_PATH} as default")
@@ -78,3 +79,5 @@ add_test(
         COMMAND hdf4cpp-tests --gtest_output=xml:${PROJECT_BINARY_DIR}/test_details.xml
         WORKING_DIRECTORY ${PROJECT_SOURCE_DIR} # we need the serialized test data for the integration test
 )
+
+add_subdirectory(examples)

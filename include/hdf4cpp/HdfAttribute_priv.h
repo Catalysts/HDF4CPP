@@ -1,6 +1,7 @@
 /// \copyright Copyright (c) Catalysts GmbH
 /// \author Patrik Kovacs, Catalysts GmbH
 
+
 #ifndef HDF4CPP_HDFATTRIBUTE_PRIV_H
 #define HDF4CPP_HDFATTRIBUTE_PRIV_H
 
@@ -10,26 +11,26 @@
 
 #include <hdf/hdf.h>
 #include <hdf/mfhdf.h>
-#include <string>
-#include <vector>
 #include <map>
 #include <memory>
+#include <string>
+#include <vector>
 
 namespace hdf4cpp {
 
 /// The base class of the attribute classes
 class HdfAttribute::HdfAttributeBase : public HdfObject {
   public:
-    HdfAttributeBase(int32 id, int32 index, Type type, const HdfDestroyerChain& chain) : HdfObject(type,
-                                                                                                   ATTRIBUTE,
-                                                                                                   chain),
-                                                                                         id(id),
-                                                                                         index(index) {
+    HdfAttributeBase(int32 id, int32 index, Type type, const HdfDestroyerChain &chain)
+        : HdfObject(type, ATTRIBUTE, chain)
+        , id(id)
+        , index(index) {
         if (id == FAIL || index == FAIL) {
             raiseException(INVALID_ID);
         }
     }
-    virtual ~HdfAttributeBase() {}
+    virtual ~HdfAttributeBase() {
+    }
 
     /// \returns The number of existing data in the attribute
     virtual intn size() const = 0;
@@ -39,7 +40,8 @@ class HdfAttribute::HdfAttributeBase : public HdfObject {
 
     /// Reads the data from the attribute
     /// \param dest The destination vector
-    virtual void get(void* dest) = 0;
+    virtual void get(void *dest) = 0;
+
   protected:
     int32 id;
 
@@ -48,12 +50,12 @@ class HdfAttribute::HdfAttributeBase : public HdfObject {
 
 /// Attribute class for the SData attributes
 class HdfAttribute::HdfDatasetAttribute : public HdfAttributeBase {
-public:
-    HdfDatasetAttribute(int32 id, const std::string& name, const HdfDestroyerChain& chain);
+  public:
+    HdfDatasetAttribute(int32 id, const std::string &name, const HdfDestroyerChain &chain);
 
     intn size() const;
 
-private:
+  private:
     intn _size;
     int32 dataType;
 
@@ -63,12 +65,12 @@ private:
 
 /// Attribute class for the VGroup attributes
 class HdfAttribute::HdfGroupAttribute : public HdfAttributeBase {
-public:
-    HdfGroupAttribute(int32 id, const std::string& name, const HdfDestroyerChain& chain);
+  public:
+    HdfGroupAttribute(int32 id, const std::string &name, const HdfDestroyerChain &chain);
 
     intn size() const;
 
-private:
+  private:
     intn _size;
     int32 dataType;
 
@@ -78,20 +80,17 @@ private:
 
 /// Attribute class for the VData attributes
 class HdfAttribute::HdfDataAttribute : public HdfAttributeBase {
-public:
-    HdfDataAttribute(int32 id, const std::string& name, const HdfDestroyerChain& chain);
+  public:
+    HdfDataAttribute(int32 id, const std::string &name, const HdfDestroyerChain &chain);
 
     intn size() const;
 
-private:
+  private:
     intn _size;
     int32 dataType;
     void get(void *dest);
     int32 getDataType() const;
 };
-
-
-
 }
 
-#endif //HDF4CPP_HDFATTRIBUTE_PRIV_H
+#endif // HDF4CPP_HDFATTRIBUTE_PRIV_H

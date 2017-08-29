@@ -1,17 +1,17 @@
 /// \copyright Copyright (c) Catalysts GmbH
 /// \author Patrik Kovacs, Catalysts GmbH
 
+
+#include <hdf/mfhdf.h>
+#include <hdf4cpp/HdfAttribute_priv.h>
 #include <hdf4cpp/HdfFile.h>
 #include <hdf4cpp/HdfItem.h>
-#include <hdf4cpp/HdfAttribute_priv.h>
-#include <hdf/mfhdf.h>
 #include <sstream>
 
-hdf4cpp::HdfItem::HdfDatasetItem::HdfDatasetItem(int32 id, const HdfDestroyerChain& chain) : HdfItemBase(id, SDATA, chain) {
+hdf4cpp::HdfItem::HdfDatasetItem::HdfDatasetItem(int32 id, const HdfDestroyerChain &chain)
+    : HdfItemBase(id, SDATA, chain) {
     _size = 1;
-    std::for_each(dims.begin(), dims.end(), [this](const int32 &t) {
-        _size *= t;
-    });
+    std::for_each(dims.begin(), dims.end(), [this](const int32 &t) { _size *= t; });
     int32 dim[MAX_DIMENSION];
     int32 size;
     char _name[MAX_NAME_LENGTH];
@@ -40,7 +40,8 @@ hdf4cpp::HdfItem::HdfDatasetItem::~HdfDatasetItem() {
 intn hdf4cpp::HdfItem::HdfDatasetItem::size() const {
     return _size;
 }
-hdf4cpp::HdfItem::HdfGroupItem::HdfGroupItem(int32 id, const HdfDestroyerChain& chain) : HdfItemBase(id, VGROUP, chain) {
+hdf4cpp::HdfItem::HdfGroupItem::HdfGroupItem(int32 id, const HdfDestroyerChain &chain)
+    : HdfItemBase(id, VGROUP, chain) {
     char _name[MAX_NAME_LENGTH];
     Vgetname(id, _name);
     name = std::string(_name);
@@ -66,7 +67,8 @@ intn hdf4cpp::HdfItem::HdfGroupItem::size() const {
 int32 hdf4cpp::HdfItem::HdfGroupItem::getDataType() const {
     raiseException(INVALID_OPERATION);
 }
-hdf4cpp::HdfItem::HdfDataItem::HdfDataItem(int32 id, const HdfDestroyerChain& chain) : HdfItemBase(id, VDATA, chain) {
+hdf4cpp::HdfItem::HdfDataItem::HdfDataItem(int32 id, const HdfDestroyerChain &chain)
+    : HdfItemBase(id, VDATA, chain) {
     this->chain.pushBack(new HdfDestroyer(&VSdetach, id));
     char _name[MAX_NAME_LENGTH];
     VSinquire(id, &nrRecords, &interlace, nullptr, &recordSize, _name);
@@ -92,15 +94,19 @@ intn hdf4cpp::HdfItem::HdfDataItem::size() const {
 int32 hdf4cpp::HdfItem::HdfDataItem::getDataType() const {
     return 0;
 }
-hdf4cpp::HdfItem::HdfItem(HdfItemBase *item, int32 sId, int32 vId) : HdfObject(item),
-                                                                     item(item),
-                                                                     sId(sId),
-                                                                     vId(vId) {}
-hdf4cpp::HdfItem::HdfItem(HdfItem&& other) : HdfObject(other.getType(), other.getClassType(), std::move(other.chain)),
-                                             item(std::move(other.item)),
-                                             sId(other.sId),
-                                             vId(other.vId) {}
-hdf4cpp::HdfItem& hdf4cpp::HdfItem::operator=(HdfItem&& it) {
+hdf4cpp::HdfItem::HdfItem(HdfItemBase *item, int32 sId, int32 vId)
+    : HdfObject(item)
+    , item(item)
+    , sId(sId)
+    , vId(vId) {
+}
+hdf4cpp::HdfItem::HdfItem(HdfItem &&other)
+    : HdfObject(other.getType(), other.getClassType(), std::move(other.chain))
+    , item(std::move(other.item))
+    , sId(other.sId)
+    , vId(other.vId) {
+}
+hdf4cpp::HdfItem &hdf4cpp::HdfItem::operator=(HdfItem &&it) {
     item = std::move(it.item);
     return *this;
 }
@@ -120,13 +126,11 @@ hdf4cpp::HdfItem::Iterator hdf4cpp::HdfItem::begin() const {
     return Iterator(sId, vId, item->getId(), 0, getType(), chain);
 }
 hdf4cpp::HdfItem::Iterator hdf4cpp::HdfItem::end() const {
-    switch(item->getType()) {
-        case VGROUP: {
-            int32 size = Vntagrefs(item->getId());
-            return Iterator(sId, vId, item->getId(), size, getType(), chain);
-        }
-        default: {
-            return Iterator(sId, vId, item->getId(), 0, getType(), chain);
-        }
+    switch (item->getType()) {
+    case VGROUP: {
+        int32 size = Vntagrefs(item->getId());
+        return Iterator(sId, vId, item->getId(), size, getType(), chain);
+    }
+    default: { return Iterator(sId, vId, item->getId(), 0, getType(), chain); }
     }
 }

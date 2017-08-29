@@ -1,16 +1,19 @@
 /// \copyright Copyright (c) Catalysts GmbH
 /// \author Patrik Kovacs, Catalysts GmbH
 
+
 #include <gtest/gtest.h>
+#include <hdf4cpp/HdfAttribute_priv.h>
 #include <hdf4cpp/HdfFile.h>
 #include <hdf4cpp/HdfItem.h>
-#include <hdf4cpp/HdfAttribute_priv.h>
 
 using namespace hdf4cpp;
 
 class HdfFileTest : public ::testing::Test {
   protected:
-    HdfFileTest() : file(std::string(TEST_DATA_PATH) + "small_test.hdf") {}
+    HdfFileTest()
+        : file(std::string(TEST_DATA_PATH) + "small_test.hdf") {
+    }
 
     HdfFile file;
 };
@@ -148,16 +151,17 @@ TEST_F(HdfFileTest, GlobalAttribute) {
 
 TEST_F(HdfFileTest, FileIterator) {
     std::ostringstream out;
-    for(auto it : file) {
+    for (auto it : file) {
         out << it.getName() << '*';
     }
-    ASSERT_EQ(out.str(), std::string("Group*GroupWithOnlyAttribute*RIG0.0*/home/patrik/HDF4CPP/tests/test_data/small_test.hdf*Egy*One*Ein*Vdata*attribute*"));
+    ASSERT_EQ(out.str(), std::string("Group*GroupWithOnlyAttribute*RIG0.0*/home/patrik/HDF4CPP/tests/test_data/"
+                                     "small_test.hdf*Egy*One*Ein*Vdata*attribute*"));
 }
 
 TEST_F(HdfFileTest, GroupIterator) {
     HdfItem item = file.get("Group");
     std::ostringstream out;
-    for(auto it : item) {
+    for (auto it : item) {
         out << it.getName() << '*';
     }
     ASSERT_EQ(out.str(), "Data*DataWithAttributes*");
@@ -166,11 +170,11 @@ TEST_F(HdfFileTest, GroupIterator) {
 TEST_F(HdfFileTest, IteratingOverNonGroupItems) {
     std::ostringstream out;
     HdfItem sdata = file.get("DoubleDataset");
-    for(const auto& item : sdata) {
+    for (const auto &item : sdata) {
         out << item.getName();
     }
     HdfItem vdata = file.get("Vdata");
-    for(const auto& item : vdata) {
+    for (const auto &item : vdata) {
         out << item.getName();
     }
     ASSERT_TRUE(out.str().empty());
@@ -197,11 +201,11 @@ TEST_F(HdfFileTest, VDataRead1) {
 TEST_F(HdfFileTest, VDataRead2) {
     HdfItem item = file.get("Vdata");
     ASSERT_EQ(item.getName(), "Vdata");
-    std::vector<std::vector<char> > vec;
+    std::vector<std::vector<char>> vec;
     item.read(vec, "name");
     std::vector<std::string> exp = {"Patrick Jane", "Barry Allen", "Angus MacGyver"};
     ASSERT_EQ(vec.size(), 3);
-    for(int i = 0; i < 3; ++i) {
+    for (int i = 0; i < 3; ++i) {
         ASSERT_EQ(std::string(vec[i].data()), exp[i]);
     }
 }

@@ -1,6 +1,7 @@
 /// \copyright Copyright (c) Catalysts GmbH
 /// \author Patrik Kovacs, Catalysts GmbH
 
+
 #ifndef HDF4CPP_HDFEXCEPTION_H
 #define HDF4CPP_HDFEXCEPTION_H
 
@@ -10,14 +11,18 @@ namespace hdf4cpp {
 
 class HdfException : public std::exception {
   public:
-    HdfException(const Type& type, const ClassType& classType, const std::string& message) : type(type),
-                                                                                             classType(classType),
-                                                                                             exceptionType(OTHER),
-                                                                                             message(exceptionMessagePrefix + message) {}
-    HdfException(const Type& type, const ClassType& classType, const ExceptionType& exceptionType) : type(type),
-                                                                                                     classType(classType),
-                                                                                                     exceptionType(exceptionType),
-                                                                                                     message(exceptionMessagePrefix + exceptionTypeMap.at(exceptionType)) {}
+    HdfException(const Type &type, const ClassType &classType, const std::string &message)
+        : type(type)
+        , classType(classType)
+        , exceptionType(OTHER)
+        , message(exceptionMessagePrefix + message) {
+    }
+    HdfException(const Type &type, const ClassType &classType, const ExceptionType &exceptionType)
+        : type(type)
+        , classType(classType)
+        , exceptionType(exceptionType)
+        , message(exceptionMessagePrefix + exceptionTypeMap.at(exceptionType)) {
+    }
     /// Get the Type of the object which threw the exception.
     Type getType() const noexcept;
     /// Get the ClassType of the object which threw the exception.
@@ -33,7 +38,6 @@ class HdfException : public std::exception {
     }
 
   private:
-
     /// Exception message prefix
     static const std::string exceptionMessagePrefix;
     /// Associates the exception type with a specific message
@@ -45,9 +49,7 @@ class HdfException : public std::exception {
     ExceptionType exceptionType;
     std::string message;
 };
-
-
 }
 
 
-#endif //HDF4CPP_HDFEXCEPTION_H
+#endif // HDF4CPP_HDFEXCEPTION_H

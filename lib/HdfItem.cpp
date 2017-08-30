@@ -37,7 +37,7 @@ int32 hdf4cpp::HdfItem::HdfDatasetItem::getDataType() const {
 }
 hdf4cpp::HdfItem::HdfDatasetItem::~HdfDatasetItem() {
 }
-intn hdf4cpp::HdfItem::HdfDatasetItem::size() const {
+int32 hdf4cpp::HdfItem::HdfDatasetItem::size() const {
     return _size;
 }
 hdf4cpp::HdfItem::HdfGroupItem::HdfGroupItem(int32 id, const HdfDestroyerChain &chain)
@@ -61,7 +61,7 @@ int32 hdf4cpp::HdfItem::HdfGroupItem::getId() const {
 }
 hdf4cpp::HdfItem::HdfGroupItem::~HdfGroupItem() {
 }
-intn hdf4cpp::HdfItem::HdfGroupItem::size() const {
+int32 hdf4cpp::HdfItem::HdfGroupItem::size() const {
     raiseException(INVALID_OPERATION);
 }
 int32 hdf4cpp::HdfItem::HdfGroupItem::getDataType() const {
@@ -88,7 +88,7 @@ std::string hdf4cpp::HdfItem::HdfDataItem::getName() const {
 std::vector<int32> hdf4cpp::HdfItem::HdfDataItem::getDims() {
     raiseException(INVALID_OPERATION);
 }
-intn hdf4cpp::HdfItem::HdfDataItem::size() const {
+int32 hdf4cpp::HdfItem::HdfDataItem::size() const {
     raiseException(INVALID_OPERATION);
 }
 int32 hdf4cpp::HdfItem::HdfDataItem::getDataType() const {
@@ -119,7 +119,7 @@ hdf4cpp::HdfAttribute hdf4cpp::HdfItem::getAttribute(const std::string &name) co
 std::string hdf4cpp::HdfItem::getName() const {
     return item->getName();
 }
-intn hdf4cpp::HdfItem::size() const {
+int32 hdf4cpp::HdfItem::size() const {
     return item->size();
 }
 hdf4cpp::HdfItem::Iterator hdf4cpp::HdfItem::begin() const {

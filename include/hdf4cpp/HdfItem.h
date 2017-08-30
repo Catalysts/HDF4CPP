@@ -35,7 +35,7 @@ struct Range {
     }
 
     /// What would be the number of data to read, if we read in this range
-    intn size() const {
+    int32 size() const {
         if (!stride) {
             return 0;
         }
@@ -73,7 +73,7 @@ class HdfItem : public HdfObject {
     std::vector<int32> getDims();
 
     /// \returns The number of data being in the item
-    intn size() const;
+    int32 size() const;
 
     /// \returns the attribute of the item with the given name
     /// \param name the name of the attribute
@@ -156,7 +156,7 @@ class HdfItem : public HdfObject {
         /// Get the dimensions of the item
         virtual std::vector<int32> getDims() = 0;
         /// Get the number of data from the item
-        virtual intn size() const = 0;
+        virtual int32 size() const = 0;
         /// Get the attribute from the item given by its name
         virtual HdfAttribute getAttribute(const std::string &name) const = 0;
 
@@ -174,7 +174,7 @@ class HdfItem : public HdfObject {
         int32 getId() const;
         std::string getName() const;
         std::vector<int32> getDims();
-        intn size() const;
+        int32 size() const;
         HdfAttribute getAttribute(const std::string &name) const;
 
         /// Reads the data in a specific range. See Range
@@ -183,7 +183,7 @@ class HdfItem : public HdfObject {
         template <class T> void read(std::vector<T> &dest, std::vector<Range> &ranges) {
             std::vector<int32> dims = getDims();
             Range::fill(ranges, dims);
-            intn length = 1;
+            int32 length = 1;
             for (size_t i = 0; i < ranges.size(); ++i) {
                 if (!ranges[i].check(dims[i])) {
                     raiseException(INVALID_RANGES);
@@ -223,7 +223,7 @@ class HdfItem : public HdfObject {
         }
 
       private:
-        intn _size;
+        int32 _size;
         int32 dataType;
         std::string name;
         std::vector<int32> dims;
@@ -239,7 +239,7 @@ class HdfItem : public HdfObject {
         int32 getId() const;
         std::string getName() const;
         std::vector<int32> getDims();
-        intn size() const;
+        int32 size() const;
 
         HdfAttribute getAttribute(const std::string &name) const;
 
@@ -261,7 +261,7 @@ class HdfItem : public HdfObject {
 
         std::vector<int32> getDims();
 
-        intn size() const;
+        int32 size() const;
 
         HdfAttribute getAttribute(const std::string &name) const;
 
@@ -347,7 +347,7 @@ class HdfItem : public HdfObject {
         }
 
       private:
-        intn _size;
+        int32 _size;
         std::string name;
 
         int32 nrRecords;

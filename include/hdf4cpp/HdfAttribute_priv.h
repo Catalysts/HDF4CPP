@@ -32,7 +32,7 @@ class HdfAttribute::HdfAttributeBase : public HdfObject {
     virtual ~HdfAttributeBase() {}
 
     /// \returns The number of existing data in the attribute
-    virtual intn size() const = 0;
+    virtual int32 size() const = 0;
 
     /// \returns The data type number of the data held by the attribute
     virtual int32 getDataType() const = 0;
@@ -51,7 +51,7 @@ class HdfAttribute::HdfDatasetAttribute : public HdfAttributeBase {
 public:
     HdfDatasetAttribute(int32 id, const std::string& name, const HdfDestroyerChain& chain);
 
-    intn size() const;
+    int32 size() const;
 
 private:
     int32 _size;
@@ -66,10 +66,10 @@ class HdfAttribute::HdfGroupAttribute : public HdfAttributeBase {
 public:
     HdfGroupAttribute(int32 id, const std::string& name, const HdfDestroyerChain& chain);
 
-    intn size() const;
+    int32 size() const;
 
 private:
-    intn _size;
+    int32 _size;
     int32 dataType;
 
     void get(void *dest);
@@ -81,7 +81,7 @@ class HdfAttribute::HdfDataAttribute : public HdfAttributeBase {
 public:
     HdfDataAttribute(int32 id, const std::string& name, const HdfDestroyerChain& chain);
 
-    intn size() const;
+    int32 size() const;
 
 private:
     int32 _size;

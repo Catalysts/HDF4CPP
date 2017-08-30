@@ -4,7 +4,7 @@
 
 The HDF4CPP library is a wrapper library of the hdf4 C interfaces.
 The target was to create a common c++ api to read and write hdf scientific data.
-The only supports the reading of the data at the moment.
+The library only supports reading of the data at the moment.
 
 ## API overview
 
@@ -173,20 +173,26 @@ msvc
 
 ## Build instructions
 
-The hdf4 C library is needed to be installed.
+The hdf4 C library is needed to build this project.
 
 ```bash
 mkdir build
 cd build
 cmake ..
-make
+cmake --build .
 ```
+
+Note: on windows you need to point cmake to your hdf4-C installation. This
+can be done using `-DCMAKE_PREFIX_PATH=<path/to/hdf4>`.
 
 ## Install
-
+First build as above, then run:
 ```bash
-make install
+cmake --build . --target install
 ```
+
+Note: you can use `-DCMAKE_INSTALL_PREFIX=<path>` in the previous `cmake`
+call to change the install location.
 
 ## Generating documentation
 
@@ -194,11 +200,11 @@ make install
 It includes documentation which is necessary for using this library.
 
 ```bash
-make docs_user
+cmake --build . --target docs_user
 ```
 
 2. Generating the whole documentations.
 
 ```bash
-make docs_all
+cmake --build . --target docs_all
 ```

@@ -28,7 +28,7 @@ if (DOXYGEN_FOUND)
             )
 else ()
     message(WARNING "Doxygen not found")
-endif()
+endif ()
 
 add_library(hdf4cpp
         lib/HdfFile.cpp
@@ -36,6 +36,11 @@ add_library(hdf4cpp
         lib/HdfAttribute.cpp
         lib/HdfException.cpp
         include/hdf4cpp/HdfObject.h
+        include/hdf4cpp/HdfAttribute.h
+        include/hdf4cpp/HdfException.h
+        include/hdf4cpp/HdfFile.h
+        include/hdf4cpp/HdfItem.h
+        include/hdf4cpp/HdfDefines.h
         )
 
 target_include_directories(hdf4cpp
@@ -48,6 +53,13 @@ target_link_libraries(hdf4cpp
         ${HDF4_LIBRARIES}
         )
 
+if (MSVC)
+    target_compile_definitions(hdf4cpp PUBLIC
+            NEEDS_NORETURN
+            )
+endif ()
+
+
 enable_testing()
 find_package(GTest REQUIRED)
 find_package(Threads REQUIRED)
@@ -58,13 +70,15 @@ add_executable(hdf4cpp-tests
 target_include_directories(hdf4cpp-tests
         PRIVATE
         ${GTEST_INCLUDE_DIRS}
-        ${hdf4cpp_INCLUDE_DIRS}
         )
 target_link_libraries(hdf4cpp-tests
         ${GTEST_BOTH_LIBRARIES}
         ${CMAKE_THREAD_LIBS_INIT}
         hdf4cpp
         )
+target_compile_definitions(hdf4cpp-tests PRIVATE
+        GTEST_DONT_DEFINE_FAIL
+        GTEST_DONT_DEFINE_SUCCEED)
 
 
 if (NOT DEFINED TEST_DATA_PATH)

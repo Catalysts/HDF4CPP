@@ -39,7 +39,7 @@ TEST_F(HdfFileTest, ReadData2) {
     HdfItem item = file.get("DataWithAttributes");
     std::vector<float32> vec;
     item.read(vec);
-    ASSERT_EQ(vec, std::vector<float32>({0.0, 0.1, 0.2, 1.0, 1.1, 1.2, 2.0, 2.1, 2.2}));
+    ASSERT_EQ(vec, std::vector<float32>({0.0f, 0.1f, 0.2f, 1.0f, 1.1f, 1.2f, 2.0f, 2.1f, 2.2f}));
 }
 
 TEST_F(HdfFileTest, ReadDatasetAttributes) {
@@ -96,7 +96,7 @@ TEST_F(HdfFileTest, ReadDataInRange) {
         HdfItem item = file.get("DataWithAttributes");
         std::vector<float32> vec;
         item.read(vec, std::vector<Range>({Range(2, 1), Range(0, 2)}));
-        ASSERT_EQ(vec, std::vector<float32>({2.0, 2.1}));
+        ASSERT_EQ(vec, std::vector<float32>({2.0f, 2.1f}));
     }
 }
 

@@ -17,7 +17,7 @@ hdf4cpp::HdfAttribute::HdfDatasetAttribute::HdfDatasetAttribute(int32 id,
         raiseException(STATUS_RETURN_FAIL);
     }
 }
-intn hdf4cpp::HdfAttribute::HdfDatasetAttribute::size() const {
+int32 hdf4cpp::HdfAttribute::HdfDatasetAttribute::size() const {
     return _size;
 }
 int32 hdf4cpp::HdfAttribute::HdfDatasetAttribute::getDataType() const {
@@ -39,7 +39,7 @@ hdf4cpp::HdfAttribute::HdfGroupAttribute::HdfGroupAttribute(int32 id,
                                                             const std::string &name,
                                                             const HdfDestroyerChain &chain)
     : HdfAttributeBase(id, 0, VGROUP, chain) {
-    int32 nrAtts = Vnattrs2(id);
+    intn nrAtts = Vnattrs2(id);
     for (intn i = 0; i < nrAtts; ++i) {
         char names[MAX_NAME_LENGTH];
         int32 type, count, size, nFields;
@@ -54,7 +54,7 @@ hdf4cpp::HdfAttribute::HdfGroupAttribute::HdfGroupAttribute(int32 id,
     }
     raiseException(INVALID_NAME);
 }
-intn hdf4cpp::HdfAttribute::HdfGroupAttribute::size() const {
+int32 hdf4cpp::HdfAttribute::HdfGroupAttribute::size() const {
     return _size;
 }
 int32 hdf4cpp::HdfAttribute::HdfGroupAttribute::getDataType() const {
@@ -73,7 +73,7 @@ hdf4cpp::HdfAttribute::HdfDataAttribute::HdfDataAttribute(int32 id,
         raiseException(STATUS_RETURN_FAIL);
     }
 }
-intn hdf4cpp::HdfAttribute::HdfDataAttribute::size() const {
+int32 hdf4cpp::HdfAttribute::HdfDataAttribute::size() const {
     return _size;
 }
 void hdf4cpp::HdfAttribute::HdfDataAttribute::get(void *dest) {
@@ -94,7 +94,7 @@ hdf4cpp::HdfAttribute &hdf4cpp::HdfAttribute::operator=(HdfAttribute &&attr) {
     setClassType(attribute->getClassType());
     return *this;
 }
-intn hdf4cpp::HdfAttribute::size() const {
+int32 hdf4cpp::HdfAttribute::size() const {
     return attribute->size();
 }
 HdfAttribute::HdfAttribute(HdfAttributeBase *attribute)

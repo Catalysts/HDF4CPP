@@ -9,6 +9,9 @@ find_package(HDF4 CONFIG QUIET)
 
 if (HDF4_FOUND)
     set(HDF4_LIBRARIES hdf4::mfhdf-static hdf4::hdf-static)
+    set(HDF4_INCLUDE_DIRS
+            $<TARGET_PROPERTY:hdf4::mfhdf-static,INTERFACE_INCLUDE_DIRECTORIES>
+            $<TARGET_PROPERTY:hdf4::hdf-static,INTERFACE_INCLUDE_DIRECTORIES>)
 else ()
     find_path(HDF4_INCLUDE_DIRS hdf.h PATH_SUFFIXES hdf)
     find_library(MFHDF_LIB NAMES mfhdf mfhdfalt)

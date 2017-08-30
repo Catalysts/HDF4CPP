@@ -47,7 +47,7 @@ add_library(hdf4cpp
 target_include_directories(hdf4cpp
         PUBLIC
         include/
-        ${HDF4_INCLUDE_DIR}
+        ${HDF4_INCLUDE_DIRS}
         )
 
 target_link_libraries(hdf4cpp
@@ -77,6 +77,9 @@ target_link_libraries(hdf4cpp-tests
         ${CMAKE_THREAD_LIBS_INIT}
         hdf4cpp
         )
+target_compile_definitions(hdf4cpp-tests PRIVATE
+        GTEST_DONT_DEFINE_FAIL
+        GTEST_DONT_DEFINE_SUCCEED)
 
 
 if (NOT DEFINED TEST_DATA_PATH)

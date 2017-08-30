@@ -37,7 +37,6 @@ add_library(hdf4cpp
         lib/HdfException.cpp
         include/hdf4cpp/HdfObject.h
         include/hdf4cpp/HdfAttribute.h
-        include/hdf4cpp/HdfAttribute_priv.h
         include/hdf4cpp/HdfException.h
         include/hdf4cpp/HdfFile.h
         include/hdf4cpp/HdfItem.h

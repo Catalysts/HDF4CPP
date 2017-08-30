@@ -72,9 +72,6 @@ class HdfItem : public HdfObject {
     /// \note This operation is not supported for every item type
     std::vector<int32> getDims();
 
-    /// \returns The number of data being in the item
-    int32 size() const;
-
     /// \returns the attribute of the item with the given name
     /// \param name the name of the attribute
     /// \note If there are multiple attributes with the same name then the first
@@ -155,15 +152,11 @@ class HdfItem : public HdfObject {
         virtual std::string getName() const = 0;
         /// Get the dimensions of the item
         virtual std::vector<int32> getDims() = 0;
-        /// Get the number of data from the item
-        virtual int32 size() const = 0;
         /// Get the attribute from the item given by its name
         virtual HdfAttribute getAttribute(const std::string &name) const = 0;
 
       protected:
         int32 id;
-
-        virtual int32 getDataType() const = 0;
     };
     /// Item class for the SData items
     class HdfDatasetItem : public HdfItemBase {
@@ -174,7 +167,6 @@ class HdfItem : public HdfObject {
         int32 getId() const;
         std::string getName() const;
         std::vector<int32> getDims();
-        int32 size() const;
         HdfAttribute getAttribute(const std::string &name) const;
 
         /// Reads the data in a specific range. See Range
@@ -190,7 +182,7 @@ class HdfItem : public HdfObject {
                 }
                 length *= ranges[i].size();
             }
-            auto it = typeSizeMap.find(getDataType());
+            auto it = typeSizeMap.find(dataType);
             if (it != typeSizeMap.end()) {
                 if ((size_t)it->second != sizeof(T)) {
                     raiseException(BUFFER_SIZE_NOT_ENOUGH);
@@ -227,8 +219,6 @@ class HdfItem : public HdfObject {
         int32 dataType;
         std::string name;
         std::vector<int32> dims;
-
-        int32 getDataType() const;
     };
     /// Item class for VGroup items
     class HdfGroupItem : public HdfItemBase {
@@ -239,14 +229,11 @@ class HdfItem : public HdfObject {
         int32 getId() const;
         std::string getName() const;
         std::vector<int32> getDims();
-        int32 size() const;
 
         HdfAttribute getAttribute(const std::string &name) const;
 
       private:
         std::string name;
-
-        int32 getDataType() const;
     };
     /// Item class for VData items
     class HdfDataItem : public HdfItemBase {
@@ -260,8 +247,6 @@ class HdfItem : public HdfObject {
         std::string getName() const;
 
         std::vector<int32> getDims();
-
-        int32 size() const;
 
         HdfAttribute getAttribute(const std::string &name) const;
 
@@ -353,8 +338,6 @@ class HdfItem : public HdfObject {
         int32 nrRecords;
         int32 interlace;
         int32 recordSize;
-
-        int32 getDataType() const;
     };
 
     HdfItem(HdfItemBase *item, int32 sId, int32 vId);

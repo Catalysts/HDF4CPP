@@ -5,11 +5,11 @@
 #include <mfhdf.h>
 #include <stdexcept>
 
+#include <hdf4cpp/HdfAttribute.h>
 #include <hdf4cpp/HdfDefines.h>
 #include <hdf4cpp/HdfException.h>
 #include <hdf4cpp/HdfFile.h>
 #include <hdf4cpp/HdfItem.h>
-#include <hdf4cpp/HdfAttribute.h>
 
 
 hdf4cpp::HdfFile::HdfFile(const std::string &path)
@@ -42,21 +42,20 @@ hdf4cpp::HdfFile::HdfFile(const std::string &path)
     }
 }
 hdf4cpp::HdfFile::HdfFile(HdfFile &&file)
-    : HdfObject(file.getType(), file.getClassType()) {
+    : HdfObject(file.getType(), file.getClassType(), std::move(file.chain)) {
     sId = file.sId;
     vId = file.vId;
-    loneRefs = file.loneRefs;
+    loneRefs = std::move(file.loneRefs);
     file.sId = file.vId = FAIL;
-    loneRefs.clear();
 }
 hdf4cpp::HdfFile &hdf4cpp::HdfFile::operator=(HdfFile &&file) {
     setType(file.getType());
     setClassType(file.getClassType());
+    chain = std::move(file.chain);
     sId = file.sId;
     vId = file.vId;
-    loneRefs = file.loneRefs;
+    loneRefs = std::move(file.loneRefs);
     file.sId = file.vId = FAIL;
-    file.loneRefs.clear();
     return *this;
 }
 hdf4cpp::HdfFile::~HdfFile() {
@@ -81,18 +80,18 @@ int32 hdf4cpp::HdfFile::getDataId(const std::string &name) const {
 }
 hdf4cpp::HdfItem hdf4cpp::HdfFile::get(const std::string &name) const {
     int32 id = getDatasetId(name);
-    if (id == FAIL) {
-        id = getGroupId(name);
-        if (id == FAIL) {
-            id = getDataId(name);
-            if (id == FAIL) {
-                raiseException(INVALID_ID);
-            }
-            return HdfItem(new HdfItem::HdfDataItem(id, chain), sId, vId);
-        }
+    if (id != FAIL) {
+        return HdfItem(new HdfItem::HdfDatasetItem(id, chain), sId, vId);
+    }
+    id = getGroupId(name);
+    if (id != FAIL) {
         return HdfItem(new HdfItem::HdfGroupItem(id, chain), sId, vId);
     }
-    return HdfItem(new HdfItem::HdfDatasetItem(id, chain), sId, vId);
+    id = getDataId(name);
+    if (id != FAIL) {
+        return HdfItem(new HdfItem::HdfDataItem(id, chain), sId, vId);
+    }
+    raiseException(INVALID_ID);
 }
 std::vector<int32> hdf4cpp::HdfFile::getDatasetIds(const std::string &name) const {
     std::vector<int32> ids;
@@ -137,7 +136,7 @@ std::vector<hdf4cpp::HdfItem> hdf4cpp::HdfFile::getAll(const std::string &name) 
     for (const auto &id : ids) {
         items.push_back(HdfItem(new HdfItem::HdfGroupItem(id, chain), sId, vId));
     }
-    return std::move(items);
+    return items;
 }
 hdf4cpp::HdfAttribute hdf4cpp::HdfFile::getAttribute(const std::string &name) const {
     return HdfAttribute(new HdfAttribute::HdfDatasetAttribute(sId, name, chain));

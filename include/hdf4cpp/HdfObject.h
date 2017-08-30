@@ -83,7 +83,7 @@ class HdfObject {
     }
 
     /// Throws an HdfException by its type
-	NORETURN void raiseException(const ExceptionType &exceptionType) const {
+    NORETURN void raiseException(const ExceptionType &exceptionType) const {
         throw HdfException(type, classType, exceptionType);
     }
 

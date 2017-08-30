@@ -30,17 +30,21 @@ else ()
     message(WARNING "Doxygen not found")
 endif ()
 
-add_library(hdf4cpp
-        lib/HdfFile.cpp
-        lib/HdfItem.cpp
-        lib/HdfAttribute.cpp
-        lib/HdfException.cpp
+set(HEADERS
+        include/hdf4cpp/hdf.h
         include/hdf4cpp/HdfObject.h
         include/hdf4cpp/HdfAttribute.h
         include/hdf4cpp/HdfException.h
         include/hdf4cpp/HdfFile.h
         include/hdf4cpp/HdfItem.h
-        include/hdf4cpp/HdfDefines.h
+        include/hdf4cpp/HdfDefines.h)
+
+add_library(hdf4cpp
+        lib/HdfFile.cpp
+        lib/HdfItem.cpp
+        lib/HdfAttribute.cpp
+        lib/HdfException.cpp
+        ${HEADERS}
         )
 
 target_include_directories(hdf4cpp
@@ -95,3 +99,8 @@ add_test(
 )
 
 add_subdirectory(examples)
+
+install(TARGETS hdf4cpp DESTINATION lib)
+install(FILES ${HEADERS}
+        DESTINATION "include/hdf4cpp"
+        )

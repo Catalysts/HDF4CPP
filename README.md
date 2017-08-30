@@ -163,3 +163,42 @@ just to get information about the thrower object.
 Has a **getExceptionType** which returns information about the type
 of the exception, and a **getMessage** method which returns a message
 as string.
+
+## Supported compilers
+```
+g++
+clang++
+msvc
+```
+
+## Build instructions
+
+The hdf4 C library is needed to be installed.
+
+```bash
+mkdir build
+cd build
+cmake ..
+make
+```
+
+## Install
+
+```bash
+make install
+```
+
+## Generating documentation
+
+1. Generating the user documentation.
+It includes documentation which is necessary for using this library.
+
+```bash
+make docs_user
+```
+
+2. Generating the whole documentations.
+
+```bash
+make docs_all
+```

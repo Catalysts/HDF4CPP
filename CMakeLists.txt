@@ -1,6 +1,6 @@
 cmake_minimum_required(VERSION 2.8)
 
-project(HDF4CPP)
+project(HDF4CPP LANGUAGES CXX)
 
 list(APPEND CMAKE_MODULE_PATH "${PROJECT_SOURCE_DIR}/cmake")
 

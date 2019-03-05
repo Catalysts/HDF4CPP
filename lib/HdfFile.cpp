@@ -71,11 +71,11 @@ int32 hdf4cpp::HdfFile::getDatasetId(const std::string &name) const {
 }
 int32 hdf4cpp::HdfFile::getGroupId(const std::string &name) const {
     int32 ref = Vfind(vId, name.c_str());
-    return (!ref) ? (FAIL) : (Vattach(vId, ref, "r"));
+    return (ref == 0) ? (FAIL) : (Vattach(vId, ref, "r"));
 }
 int32 hdf4cpp::HdfFile::getDataId(const std::string &name) const {
     int32 ref = VSfind(vId, name.c_str());
-    return (!ref) ? (FAIL) : (VSattach(vId, ref, "r"));
+    return (ref == 0) ? (FAIL) : (VSattach(vId, ref, "r"));
 }
 hdf4cpp::HdfItem hdf4cpp::HdfFile::get(const std::string &name) const {
     int32 id = getDatasetId(name);

@@ -1,0 +1,19 @@
+language: cpp
+
+dist: xenial
+
+addons:
+  apt:
+    packages:
+    - libgtest-dev
+    - libhdf4-dev
+
+install:
+- cd /usr/src/googletest
+- cmake .
+- make install --jobs=$(nproc)
+
+script:
+- cmake .
+- make --jobs=$(nproc)
+- tests/hdf4cpp-tests

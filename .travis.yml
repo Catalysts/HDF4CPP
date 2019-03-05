@@ -8,6 +8,10 @@ addons:
     - libgtest-dev
     - libhdf4-dev
 
+compiler:
+- clang
+- gcc
+
 install:
 - mkdir gtest
 - cd gtest

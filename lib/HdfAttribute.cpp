@@ -88,8 +88,8 @@ hdf4cpp::HdfAttribute::HdfAttribute(HdfAttribute &&other)
     : HdfObject(other.getType(), other.getClassType(), std::move(other.chain))
     , attribute(std::move(other.attribute)) {
 }
-hdf4cpp::HdfAttribute &hdf4cpp::HdfAttribute::operator=(HdfAttribute &&attr) {
-    attribute = std::move(attr.attribute);
+hdf4cpp::HdfAttribute &hdf4cpp::HdfAttribute::operator=(HdfAttribute &&other) {
+    attribute = std::move(other.attribute);
     setType(attribute->getType());
     setClassType(attribute->getClassType());
     return *this;

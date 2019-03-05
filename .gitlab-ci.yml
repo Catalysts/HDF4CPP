@@ -10,10 +10,10 @@ tests:
     make
   - cd /usr/src/googletest
   - cmake .
-  - make install
+  - make install --jobs=$(nproc)
   - cd $CI_PROJECT_DIR
   - cmake .
-  - cmake --build .
+  - make --jobs=$(nproc)
   - tests/hdf4cpp-tests
 
 # https://docs.gitlab.com/ce/ci/yaml/README.html

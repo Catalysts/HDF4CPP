@@ -58,8 +58,7 @@ hdf4cpp::HdfFile &hdf4cpp::HdfFile::operator=(HdfFile &&file) {
     file.sId = file.vId = FAIL;
     return *this;
 }
-hdf4cpp::HdfFile::~HdfFile() {
-}
+hdf4cpp::HdfFile::~HdfFile() = default;
 int32 hdf4cpp::HdfFile::getSId() const {
     return sId;
 }

@@ -9,7 +9,7 @@ addons:
     - libhdf4-dev
 
 install:
-- cd /usr/src/googletest
+- cd /usr/src/gtest
 - cmake .
 - make install --jobs=$(nproc)
 

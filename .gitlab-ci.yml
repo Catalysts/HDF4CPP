@@ -1,0 +1,20 @@
+tests:
+  image: ubuntu:18.04
+  script:
+  - apt-get update
+  - apt-get install --yes --no-install-recommends
+    cmake
+    g++
+    libgtest-dev
+    libhdf4-dev
+    make
+  - cd /usr/src/googletest
+  - cmake .
+  - make install
+  - cd $CI_PROJECT_DIR
+  - cmake .
+  - cmake --build .
+  - tests/hdf4cpp-tests
+
+# https://docs.gitlab.com/ce/ci/yaml/README.html
+# https://docs.gitlab.com/ee/ci/ci_cd_for_external_repos/github_integration.html

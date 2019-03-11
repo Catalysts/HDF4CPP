@@ -1,0 +1,26 @@
+language: cpp
+
+dist: xenial
+
+addons:
+  apt:
+    packages:
+    - libgtest-dev
+    - libhdf4-dev
+
+compiler:
+- clang
+- gcc
+
+install:
+- mkdir gtest
+- cd gtest
+- cmake /usr/src/gtest
+- make --jobs=$(nproc)
+- cd ..
+
+script:
+# https://cmake.org/cmake/help/v3.12/module/FindGTest.html
+- GTEST_ROOT="$PWD/gtest" cmake .
+- make --jobs=$(nproc)
+- tests/hdf4cpp-tests

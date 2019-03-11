@@ -1,5 +1,7 @@
 # HDF4CPP
 
+[![Build Status](https://api.travis-ci.org/Catalysts/HDF4CPP.svg?branch=master)](https://travis-ci.org/Catalysts/HDF4CPP/builds#)
+
 ## Introduction
 
 The HDF4CPP library is a wrapper library of the hdf4 C interfaces.

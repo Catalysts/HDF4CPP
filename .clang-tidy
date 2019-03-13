@@ -18,6 +18,7 @@ WarningsAsErrors: >-
   *,
   -bugprone-exception-escape,
   -clang-diagnostic-return-type,
+  -cppcoreguidelines-avoid-goto,
   -cppcoreguidelines-owning-memory,
   -cppcoreguidelines-pro-bounds-array-to-pointer-decay,
   -cppcoreguidelines-pro-bounds-pointer-arithmetic,

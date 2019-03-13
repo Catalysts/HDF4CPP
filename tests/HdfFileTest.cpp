@@ -13,15 +13,15 @@ class HdfFileTest : public ::testing::Test {
 };
 
 TEST_F(HdfFileTest, DatasetValidity) {
-    EXPECT_NO_THROW(file.get("Data"));
+    ASSERT_NO_THROW(file.get("Data"));
 }
 
 TEST_F(HdfFileTest, GroupValidity) {
-    EXPECT_NO_THROW(file.get("Group"));
+    ASSERT_NO_THROW(file.get("Group"));
 }
 
 TEST_F(HdfFileTest, InvalidItem) {
-    EXPECT_THROW(file.get("InvalidKey"), HdfException);
+    ASSERT_THROW(file.get("InvalidKey"), HdfException);
 }
 
 TEST_F(HdfFileTest, ReadData1) {
@@ -78,7 +78,7 @@ TEST_F(HdfFileTest, ReadGroupAttributes) {
 }
 
 TEST_F(HdfFileTest, ReadInvalidData) {
-    EXPECT_THROW(file.get("InvalidKey"), HdfException);
+    ASSERT_THROW(file.get("InvalidKey"), HdfException);
 }
 
 TEST_F(HdfFileTest, ReadDataInRange) {
@@ -98,12 +98,12 @@ TEST_F(HdfFileTest, ReadDataInRange) {
 
 TEST_F(HdfFileTest, ReadInvalidDatasetAttribute) {
     HdfItem item = file.get("Data");
-    EXPECT_THROW(HdfAttribute attribute = item.getAttribute("Attribute"), HdfException);
+    ASSERT_THROW(HdfAttribute attribute = item.getAttribute("Attribute"), HdfException);
 }
 
 TEST_F(HdfFileTest, ReadInvalidGroupAttribute) {
     HdfItem item = file.get("Group");
-    EXPECT_THROW(HdfAttribute attribute = item.getAttribute("Attribute"), HdfException);
+    ASSERT_THROW(HdfAttribute attribute = item.getAttribute("Attribute"), HdfException);
 }
 
 TEST_F(HdfFileTest, GetAllDatsetsWithTheSameName) {
@@ -119,21 +119,21 @@ TEST_F(HdfFileTest, GetAllDatsetsWithTheSameName) {
 TEST_F(HdfFileTest, DatasetTypeIncompatibility) {
     std::vector<std::string> vec;
     HdfItem item = file.get("Data");
-    EXPECT_THROW(item.read(vec), HdfException);
+    ASSERT_THROW(item.read(vec), HdfException);
 }
 
 TEST_F(HdfFileTest, DatasetAttributeTypeIncompatibility) {
     std::vector<std::string> vec;
     HdfItem item = file.get("DataWithAttributes");
     HdfAttribute attribute = item.getAttribute("Integer");
-    EXPECT_THROW(attribute.get(vec), HdfException);
+    ASSERT_THROW(attribute.get(vec), HdfException);
 }
 
 TEST_F(HdfFileTest, GroupAttributeTypeIncompatibility) {
     std::vector<std::string> vec;
     HdfItem item = file.get("GroupWithOnlyAttribute");
     HdfAttribute attribute = item.getAttribute("Egy");
-    EXPECT_THROW(attribute.get(vec), HdfException);
+    ASSERT_THROW(attribute.get(vec), HdfException);
 }
 
 TEST_F(HdfFileTest, GlobalAttribute) {
@@ -181,7 +181,7 @@ TEST_F(HdfFileTest, ItemIterator3) {
 }
 
 TEST_F(HdfFileTest, HiddenGroup) {
-    EXPECT_NO_THROW(file.get("RIG0.0"));
+    ASSERT_NO_THROW(file.get("RIG0.0"));
 }
 
 TEST_F(HdfFileTest, VDataRead1) {

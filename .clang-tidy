@@ -32,6 +32,5 @@ WarningsAsErrors: >-
   -cppcoreguidelines-pro-bounds-pointer-arithmetic,
   -cppcoreguidelines-pro-type-member-init,
   -modernize-use-noexcept,
-  -performance-inefficient-vector-operation,
   -performance-move-const-arg,
   -performance-noexcept-move-constructor,

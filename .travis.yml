@@ -21,6 +21,10 @@ install:
 
 script:
 # https://cmake.org/cmake/help/v3.12/module/FindGTest.html
-- GTEST_ROOT="$PWD/gtest" cmake .
+- GTEST_ROOT="$PWD/gtest"
+  cmake
+  -DCMAKE_EXPORT_COMPILE_COMMANDS=ON
+  -DCMAKE_CXX_CLANG_TIDY='clang-tidy;-p=compile_commands.json'
+  .
 - make --jobs=$(nproc)
 - tests/hdf4cpp-tests

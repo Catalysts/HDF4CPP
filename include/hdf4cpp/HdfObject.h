@@ -44,8 +44,8 @@ class HdfObject {
             : chain(other.chain) {
         }
 
-        void pushBack(HdfDestroyer *destroyer) {
-            chain.push_back(std::shared_ptr<HdfDestroyer>(destroyer));
+        void emplaceBack(const std::function<int32(int32)> &endFunction, int32 id) {
+            chain.emplace_back(new HdfDestroyer(endFunction, id));
         }
 
       private:

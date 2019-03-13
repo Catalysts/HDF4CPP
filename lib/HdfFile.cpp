@@ -23,9 +23,9 @@ hdf4cpp::HdfFile::HdfFile(const std::string &path)
 
     Vinitialize(vId);
 
-    chain.pushBack(new HdfDestroyer(&SDend, sId));
-    chain.pushBack(new HdfDestroyer(&Vfinish, vId));
-    chain.pushBack(new HdfDestroyer(&Hclose, vId));
+    chain.emplaceBack(&SDend, sId);
+    chain.emplaceBack(&Vfinish, vId);
+    chain.emplaceBack(&Hclose, vId);
 
     int32 loneSize = Vlone(vId, nullptr, 0);
     std::vector<int32> refs((size_t)loneSize);

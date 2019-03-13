@@ -1,6 +1,6 @@
 # https://clang.llvm.org/extra/clang-tidy/checks/list.html
 
-# gtest's TEST_F triggers
+# gtest's TEST & TEST_F trigger
 # - cppcoreguidelines-special-member-functions
 # - modernize-use-equals-delete
 
@@ -22,7 +22,6 @@ WarningsAsErrors: >-
   *,
   -bugprone-exception-escape,
   -clang-diagnostic-return-type,
-  -cppcoreguidelines-owning-memory,
   -cppcoreguidelines-pro-bounds-array-to-pointer-decay,
   -cppcoreguidelines-pro-bounds-pointer-arithmetic,
   -cppcoreguidelines-pro-type-member-init,

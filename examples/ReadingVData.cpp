@@ -6,6 +6,7 @@
 
 using namespace hdf4cpp;
 
+// NOLINTNEXTLINE(bugprone-exception-escape)
 int main() {
     // Open the file
     HdfFile file(TEST_DATA_PATH "small_test.hdf");

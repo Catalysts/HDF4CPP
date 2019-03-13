@@ -35,7 +35,6 @@ Checks: >-
 
 WarningsAsErrors: >-
   *,
-  -bugprone-exception-escape,
   -clang-diagnostic-return-type,
   -cppcoreguidelines-pro-bounds-pointer-arithmetic,
   -cppcoreguidelines-pro-type-member-init,

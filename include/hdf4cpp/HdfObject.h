@@ -54,12 +54,12 @@ class HdfObject {
 
   public:
     /// \returns the type of the object
-    virtual Type getType() const {
+    virtual Type getType() const noexcept {
         return type;
     }
 
     /// \returns the class type of the object
-    virtual ClassType getClassType() const {
+    virtual ClassType getClassType() const noexcept {
         return classType;
     }
 
@@ -75,10 +75,10 @@ class HdfObject {
         , chain(object->chain) {
     }
 
-    virtual void setType(const Type &type) {
+    virtual void setType(const Type &type) noexcept {
         this->type = type;
     }
-    virtual void setClassType(const ClassType &classType) {
+    virtual void setClassType(const ClassType &classType) noexcept {
         this->classType = classType;
     }
 

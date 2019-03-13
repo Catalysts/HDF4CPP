@@ -79,13 +79,13 @@ hdf4cpp::HdfItem::HdfItem(HdfItemBase *item, int32 sId, int32 vId)
     , sId(sId)
     , vId(vId) {
 }
-hdf4cpp::HdfItem::HdfItem(HdfItem &&other)
+hdf4cpp::HdfItem::HdfItem(HdfItem &&other) noexcept
     : HdfObject(other.getType(), other.getClassType(), std::move(other.chain))
     , item(std::move(other.item))
     , sId(other.sId)
     , vId(other.vId) {
 }
-hdf4cpp::HdfItem &hdf4cpp::HdfItem::operator=(HdfItem &&it) {
+hdf4cpp::HdfItem &hdf4cpp::HdfItem::operator=(HdfItem &&it) noexcept {
     setType(it.getType());
     setClassType(it.getClassType());
     chain = std::move(it.chain);

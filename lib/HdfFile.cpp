@@ -31,14 +31,14 @@ hdf4cpp::HdfFile::HdfFile(const std::string &path)
     std::vector<int32> refs((size_t)loneSize);
     Vlone(vId, refs.data(), loneSize);
     for (const auto &ref : refs) {
-        loneRefs.push_back(std::pair<int32, Type>(ref, VGROUP));
+        loneRefs.emplace_back(ref, VGROUP);
     }
 
     int32 loneVdata = VSlone(vId, nullptr, 0);
     refs.resize((size_t)loneVdata);
     VSlone(vId, refs.data(), loneVdata);
     for (const auto &ref : refs) {
-        loneRefs.push_back(std::pair<int32, Type>(ref, VDATA));
+        loneRefs.emplace_back(ref, VDATA);
     }
 }
 hdf4cpp::HdfFile::HdfFile(HdfFile &&file)

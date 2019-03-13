@@ -7,38 +7,35 @@
 
 using namespace hdf4cpp;
 
-class HdfFileTest : public ::testing::Test {
-  protected:
-    HdfFile file{TEST_DATA_PATH "small_test.hdf"};
-};
+const HdfFile file{TEST_DATA_PATH "small_test.hdf"};
 
-TEST_F(HdfFileTest, DatasetValidity) {
+TEST(HdfFileTest, DatasetValidity) {
     ASSERT_NO_THROW(file.get("Data"));
 }
 
-TEST_F(HdfFileTest, GroupValidity) {
+TEST(HdfFileTest, GroupValidity) {
     ASSERT_NO_THROW(file.get("Group"));
 }
 
-TEST_F(HdfFileTest, InvalidItem) {
+TEST(HdfFileTest, InvalidItem) {
     ASSERT_THROW(file.get("InvalidKey"), HdfException);
 }
 
-TEST_F(HdfFileTest, ReadData1) {
+TEST(HdfFileTest, ReadData1) {
     HdfItem item = file.get("Data");
     std::vector<int32> vec;
     item.read(vec);
     ASSERT_EQ(vec, std::vector<int32>({1, 2, 3, 4, 5, 6, 7, 8, 9}));
 }
 
-TEST_F(HdfFileTest, ReadData2) {
+TEST(HdfFileTest, ReadData2) {
     HdfItem item = file.get("DataWithAttributes");
     std::vector<float32> vec;
     item.read(vec);
     ASSERT_EQ(vec, std::vector<float32>({0.0f, 0.1f, 0.2f, 1.0f, 1.1f, 1.2f, 2.0f, 2.1f, 2.2f}));
 }
 
-TEST_F(HdfFileTest, ReadDatasetAttributes) {
+TEST(HdfFileTest, ReadDatasetAttributes) {
     HdfItem item = file.get("DataWithAttributes");
 
     HdfAttribute attribute1 = item.getAttribute("Integer");
@@ -52,7 +49,7 @@ TEST_F(HdfFileTest, ReadDatasetAttributes) {
     ASSERT_EQ(integers, std::vector<int32>({1, 12, 123, 1234, 12345}));
 }
 
-TEST_F(HdfFileTest, ReadGroupAttributes) {
+TEST(HdfFileTest, ReadGroupAttributes) {
     HdfItem item = file.get("GroupWithOnlyAttribute");
 
     {
@@ -77,11 +74,11 @@ TEST_F(HdfFileTest, ReadGroupAttributes) {
     }
 }
 
-TEST_F(HdfFileTest, ReadInvalidData) {
+TEST(HdfFileTest, ReadInvalidData) {
     ASSERT_THROW(file.get("InvalidKey"), HdfException);
 }
 
-TEST_F(HdfFileTest, ReadDataInRange) {
+TEST(HdfFileTest, ReadDataInRange) {
     {
         HdfItem item = file.get("Data");
         std::vector<int32> vec;
@@ -96,17 +93,17 @@ TEST_F(HdfFileTest, ReadDataInRange) {
     }
 }
 
-TEST_F(HdfFileTest, ReadInvalidDatasetAttribute) {
+TEST(HdfFileTest, ReadInvalidDatasetAttribute) {
     HdfItem item = file.get("Data");
     ASSERT_THROW(HdfAttribute attribute = item.getAttribute("Attribute"), HdfException);
 }
 
-TEST_F(HdfFileTest, ReadInvalidGroupAttribute) {
+TEST(HdfFileTest, ReadInvalidGroupAttribute) {
     HdfItem item = file.get("Group");
     ASSERT_THROW(HdfAttribute attribute = item.getAttribute("Attribute"), HdfException);
 }
 
-TEST_F(HdfFileTest, GetAllDatsetsWithTheSameName) {
+TEST(HdfFileTest, GetAllDatsetsWithTheSameName) {
     std::vector<HdfItem> items = file.getAll("DoubleDataset");
     ASSERT_EQ(items.size(), 4);
     std::vector<int32> vec;
@@ -116,34 +113,34 @@ TEST_F(HdfFileTest, GetAllDatsetsWithTheSameName) {
     ASSERT_EQ(vec, std::vector<int32>({0, 1}));
 }
 
-TEST_F(HdfFileTest, DatasetTypeIncompatibility) {
+TEST(HdfFileTest, DatasetTypeIncompatibility) {
     std::vector<std::string> vec;
     HdfItem item = file.get("Data");
     ASSERT_THROW(item.read(vec), HdfException);
 }
 
-TEST_F(HdfFileTest, DatasetAttributeTypeIncompatibility) {
+TEST(HdfFileTest, DatasetAttributeTypeIncompatibility) {
     std::vector<std::string> vec;
     HdfItem item = file.get("DataWithAttributes");
     HdfAttribute attribute = item.getAttribute("Integer");
     ASSERT_THROW(attribute.get(vec), HdfException);
 }
 
-TEST_F(HdfFileTest, GroupAttributeTypeIncompatibility) {
+TEST(HdfFileTest, GroupAttributeTypeIncompatibility) {
     std::vector<std::string> vec;
     HdfItem item = file.get("GroupWithOnlyAttribute");
     HdfAttribute attribute = item.getAttribute("Egy");
     ASSERT_THROW(attribute.get(vec), HdfException);
 }
 
-TEST_F(HdfFileTest, GlobalAttribute) {
+TEST(HdfFileTest, GlobalAttribute) {
     std::vector<int8> vec;
     HdfAttribute attribute = file.getAttribute("GlobalAttribute");
     attribute.get(vec);
     ASSERT_EQ(vec, std::vector<int8>({11, 22}));
 }
 
-TEST_F(HdfFileTest, FileIterator) {
+TEST(HdfFileTest, FileIterator) {
     std::ostringstream out;
     for (auto it : file) {
         out << it.getName() << '*';
@@ -152,7 +149,7 @@ TEST_F(HdfFileTest, FileIterator) {
                                      "small_test.hdf*Egy*One*Ein*Vdata*attribute*"));
 }
 
-TEST_F(HdfFileTest, GroupIterator) {
+TEST(HdfFileTest, GroupIterator) {
     HdfItem item = file.get("Group");
     std::ostringstream out;
     for (auto it : item) {
@@ -161,7 +158,7 @@ TEST_F(HdfFileTest, GroupIterator) {
     ASSERT_EQ(out.str(), "Data*DataWithAttributes*");
 }
 
-TEST_F(HdfFileTest, IteratingOverNonGroupItems) {
+TEST(HdfFileTest, IteratingOverNonGroupItems) {
     std::ostringstream out;
     HdfItem sdata = file.get("DoubleDataset");
     for (const auto &item : sdata) {
@@ -174,17 +171,17 @@ TEST_F(HdfFileTest, IteratingOverNonGroupItems) {
     ASSERT_TRUE(out.str().empty());
 }
 
-TEST_F(HdfFileTest, ItemIterator3) {
+TEST(HdfFileTest, ItemIterator3) {
     auto it = file.begin();
     HdfItem item = *it;
     ASSERT_EQ(item.getName(), "Group");
 }
 
-TEST_F(HdfFileTest, HiddenGroup) {
+TEST(HdfFileTest, HiddenGroup) {
     ASSERT_NO_THROW(file.get("RIG0.0"));
 }
 
-TEST_F(HdfFileTest, VDataRead1) {
+TEST(HdfFileTest, VDataRead1) {
     HdfItem item = file.get("Vdata");
     ASSERT_EQ(item.getName(), "Vdata");
     std::vector<int32> vec;
@@ -192,7 +189,7 @@ TEST_F(HdfFileTest, VDataRead1) {
     ASSERT_EQ(vec, std::vector<int32>({39, 19, 55}));
 }
 
-TEST_F(HdfFileTest, VDataRead2) {
+TEST(HdfFileTest, VDataRead2) {
     HdfItem item = file.get("Vdata");
     ASSERT_EQ(item.getName(), "Vdata");
     std::vector<std::vector<char>> vec;
@@ -204,7 +201,7 @@ TEST_F(HdfFileTest, VDataRead2) {
     }
 }
 
-TEST_F(HdfFileTest, VDataAttributes) {
+TEST(HdfFileTest, VDataAttributes) {
     HdfItem item = file.get("Vdata");
     ASSERT_EQ(item.getName(), "Vdata");
     HdfAttribute attribute = item.getAttribute("attribute");
@@ -213,21 +210,21 @@ TEST_F(HdfFileTest, VDataAttributes) {
     ASSERT_EQ(vec, std::vector<int32>({1, 2, 3, 3, 2, 1}));
 }
 
-TEST_F(HdfFileTest, SdataDestroyer) {
+TEST(HdfFileTest, SdataDestroyer) {
     HdfAttribute attribute = file.get("DataWithAttributes").getAttribute("Integer");
     std::vector<int32> vec;
     attribute.get(vec);
     ASSERT_EQ(vec, std::vector<int32>({12345}));
 }
 
-TEST_F(HdfFileTest, VgroupDestroyer) {
+TEST(HdfFileTest, VgroupDestroyer) {
     HdfAttribute attribute = file.get("GroupWithOnlyAttribute").getAttribute("Egy");
     std::vector<int8> vec;
     attribute.get(vec);
     ASSERT_EQ(vec, std::vector<int8>({1}));
 }
 
-TEST_F(HdfFileTest, VdataDestroyer) {
+TEST(HdfFileTest, VdataDestroyer) {
     HdfAttribute attribute = file.get("Vdata").getAttribute("attribute");
     std::vector<int32> vec;
     attribute.get(vec);

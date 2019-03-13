@@ -24,4 +24,3 @@ WarningsAsErrors: >-
   -performance-inefficient-vector-operation,
   -performance-move-const-arg,
   -performance-noexcept-move-constructor,
-  -readability-inconsistent-declaration-parameter-name,

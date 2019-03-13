@@ -61,7 +61,7 @@ class HdfAttribute;
 class HdfItem : public HdfObject {
   public:
     HdfItem(const HdfItem &item) = delete;
-    HdfItem(HdfItem &&item);
+    HdfItem(HdfItem &&other);
     HdfItem &operator=(const HdfItem &item) = delete;
     HdfItem &operator=(HdfItem &&it);
 

@@ -89,9 +89,9 @@ class HdfAttribute : public HdfObject {
 
   public:
     HdfAttribute(const HdfAttribute &) = delete;
-    HdfAttribute(HdfAttribute &&other);
+    HdfAttribute(HdfAttribute &&other) noexcept;
     HdfAttribute &operator=(const HdfAttribute &attribute) = delete;
-    HdfAttribute &operator=(HdfAttribute &&other);
+    HdfAttribute &operator=(HdfAttribute &&other) noexcept;
     /// \returns the number of elements of the attribute data
     int32 size() const;
 

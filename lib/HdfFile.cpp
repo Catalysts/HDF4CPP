@@ -41,14 +41,14 @@ hdf4cpp::HdfFile::HdfFile(const std::string &path)
         loneRefs.emplace_back(ref, VDATA);
     }
 }
-hdf4cpp::HdfFile::HdfFile(HdfFile &&file)
+hdf4cpp::HdfFile::HdfFile(HdfFile &&file) noexcept
     : HdfObject(file.getType(), file.getClassType(), std::move(file.chain)) {
     sId = file.sId;
     vId = file.vId;
     loneRefs = std::move(file.loneRefs);
     file.sId = file.vId = FAIL;
 }
-hdf4cpp::HdfFile &hdf4cpp::HdfFile::operator=(HdfFile &&file) {
+hdf4cpp::HdfFile &hdf4cpp::HdfFile::operator=(HdfFile &&file) noexcept {
     setType(file.getType());
     setClassType(file.getClassType());
     chain = std::move(file.chain);

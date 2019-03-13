@@ -84,11 +84,11 @@ void hdf4cpp::HdfAttribute::HdfDataAttribute::get(void *dest) {
 int32 hdf4cpp::HdfAttribute::HdfDataAttribute::getDataType() const {
     return dataType;
 }
-hdf4cpp::HdfAttribute::HdfAttribute(HdfAttribute &&other)
+hdf4cpp::HdfAttribute::HdfAttribute(HdfAttribute &&other) noexcept
     : HdfObject(other.getType(), other.getClassType(), std::move(other.chain))
     , attribute(std::move(other.attribute)) {
 }
-hdf4cpp::HdfAttribute &hdf4cpp::HdfAttribute::operator=(HdfAttribute &&other) {
+hdf4cpp::HdfAttribute &hdf4cpp::HdfAttribute::operator=(HdfAttribute &&other) noexcept {
     attribute = std::move(other.attribute);
     setType(attribute->getType());
     setClassType(attribute->getClassType());

@@ -61,9 +61,9 @@ class HdfAttribute;
 class HdfItem : public HdfObject {
   public:
     HdfItem(const HdfItem &item) = delete;
-    HdfItem(HdfItem &&other);
+    HdfItem(HdfItem &&other) noexcept;
     HdfItem &operator=(const HdfItem &item) = delete;
-    HdfItem &operator=(HdfItem &&it);
+    HdfItem &operator=(HdfItem &&it) noexcept;
 
     /// \returns The name of the item
     std::string getName() const;

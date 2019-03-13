@@ -18,7 +18,7 @@ hdf4cpp::HdfItem::HdfDatasetItem::HdfDatasetItem(int32 id, const HdfDestroyerCha
     dims = std::vector<int32>(dim, dim + size);
     _size = std::accumulate(dims.begin(), dims.end(), 1, std::multiplies<int32>());
     name = std::string(_name);
-    this->chain.pushBack(new HdfDestroyer(&SDendaccess, id));
+    this->chain.emplaceBack(&SDendaccess, id);
 }
 std::vector<int32> hdf4cpp::HdfItem::HdfDatasetItem::getDims() {
     return dims;
@@ -38,7 +38,7 @@ hdf4cpp::HdfItem::HdfGroupItem::HdfGroupItem(int32 id, const HdfDestroyerChain &
     char _name[MAX_NAME_LENGTH];
     Vgetname(id, _name);
     name = std::string(_name);
-    this->chain.pushBack(new HdfDestroyer(&Vdetach, id));
+    this->chain.emplaceBack(&Vdetach, id);
 }
 std::vector<int32> hdf4cpp::HdfItem::HdfGroupItem::getDims() {
     raiseException(INVALID_OPERATION);
@@ -55,7 +55,7 @@ int32 hdf4cpp::HdfItem::HdfGroupItem::getId() const {
 hdf4cpp::HdfItem::HdfGroupItem::~HdfGroupItem() = default;
 hdf4cpp::HdfItem::HdfDataItem::HdfDataItem(int32 id, const HdfDestroyerChain &chain)
     : HdfItemBase(id, VDATA, chain) {
-    this->chain.pushBack(new HdfDestroyer(&VSdetach, id));
+    this->chain.emplaceBack(&VSdetach, id);
     char _name[MAX_NAME_LENGTH];
     VSinquire(id, &nrRecords, &interlace, nullptr, &recordSize, _name);
     name = std::string(_name);

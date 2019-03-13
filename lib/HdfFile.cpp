@@ -125,14 +125,14 @@ std::vector<int32> hdf4cpp::HdfFile::getGroupDataIds(const std::string &name) co
     return ids;
 }
 std::vector<hdf4cpp::HdfItem> hdf4cpp::HdfFile::getAll(const std::string &name) const {
+    const std::vector<int32> &dataset_ids = getDatasetIds(name);
+    const std::vector<int32> &group_ids = getGroupDataIds(name);
     std::vector<HdfItem> items;
-    std::vector<int32> ids;
-    ids = getDatasetIds(name);
-    for (const auto &id : ids) {
+    items.reserve(dataset_ids.size() + group_ids.size());
+    for (auto &id : dataset_ids) {
         items.push_back(HdfItem(new HdfItem::HdfDatasetItem(id, chain), sId, vId));
     }
-    ids = getGroupDataIds(name);
-    for (const auto &id : ids) {
+    for (auto &id : group_ids) {
         items.push_back(HdfItem(new HdfItem::HdfGroupItem(id, chain), sId, vId));
     }
     return items;

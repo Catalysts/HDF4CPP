@@ -1,6 +1,8 @@
 # https://clang.llvm.org/extra/clang-tidy/checks/list.html
 
-# gtest's TEST_F triggers cppcoreguidelines-special-member-functions
+# gtest's TEST_F triggers
+# - cppcoreguidelines-special-member-functions
+# - modernize-use-equals-delete
 
 Checks: >-
   bugprone-*,
@@ -8,6 +10,7 @@ Checks: >-
   -cppcoreguidelines-special-member-functions,
   misc-*,
   modernize-*,
+  -modernize-use-equals-delete,
   performance-*,
   readability-*,
 
@@ -21,7 +24,6 @@ WarningsAsErrors: >-
   -cppcoreguidelines-pro-bounds-pointer-arithmetic,
   -cppcoreguidelines-pro-type-member-init,
   -cppcoreguidelines-pro-type-vararg,
-  -modernize-use-equals-delete,
   -modernize-use-noexcept,
   -performance-inefficient-vector-operation,
   -performance-move-const-arg,

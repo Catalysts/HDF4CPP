@@ -1,8 +1,11 @@
 # https://clang.llvm.org/extra/clang-tidy/checks/list.html
 
+# gtest's TEST_F triggers cppcoreguidelines-special-member-functions
+
 Checks: >-
   bugprone-*,
   cppcoreguidelines-*,
+  -cppcoreguidelines-special-member-functions,
   misc-*,
   modernize-*,
   performance-*,
@@ -18,7 +21,6 @@ WarningsAsErrors: >-
   -cppcoreguidelines-pro-bounds-pointer-arithmetic,
   -cppcoreguidelines-pro-type-member-init,
   -cppcoreguidelines-pro-type-vararg,
-  -cppcoreguidelines-special-member-functions,
   -modernize-use-equals-delete,
   -modernize-use-noexcept,
   -performance-inefficient-vector-operation,

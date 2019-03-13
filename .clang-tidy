@@ -33,10 +33,10 @@ Checks: >-
   performance-*,
   readability-*,
 
+# TODO fix remaining warnings in this list
 WarningsAsErrors: >-
   *,
   -clang-diagnostic-return-type,
   -cppcoreguidelines-pro-bounds-pointer-arithmetic,
   -cppcoreguidelines-pro-type-member-init,
-  -modernize-use-noexcept,
   -performance-move-const-arg,

@@ -1,6 +1,7 @@
 # https://clang.llvm.org/extra/clang-tidy/checks/list.html
 
 # gtest's TEST & TEST_F trigger
+# - cppcoreguidelines-owning-memory (TEST_F only)
 # - cppcoreguidelines-special-member-functions
 # - modernize-use-equals-delete
 
@@ -11,6 +12,7 @@ Checks: >-
   bugprone-*,
   cppcoreguidelines-*,
   -cppcoreguidelines-avoid-goto,
+  -cppcoreguidelines-owning-memory,
   -cppcoreguidelines-special-member-functions,
   misc-*,
   modernize-*,

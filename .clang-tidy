@@ -20,7 +20,6 @@ WarningsAsErrors: >-
   -cppcoreguidelines-pro-type-vararg,
   -cppcoreguidelines-special-member-functions,
   -modernize-use-emplace,
-  -modernize-use-equals-default,
   -modernize-use-equals-delete,
   -modernize-use-noexcept,
   -performance-inefficient-vector-operation,

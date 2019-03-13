@@ -32,8 +32,7 @@ std::string hdf4cpp::HdfItem::HdfDatasetItem::getName() const {
 int32 hdf4cpp::HdfItem::HdfDatasetItem::getId() const {
     return id;
 }
-hdf4cpp::HdfItem::HdfDatasetItem::~HdfDatasetItem() {
-}
+hdf4cpp::HdfItem::HdfDatasetItem::~HdfDatasetItem() = default;
 hdf4cpp::HdfItem::HdfGroupItem::HdfGroupItem(int32 id, const HdfDestroyerChain &chain)
     : HdfItemBase(id, VGROUP, chain) {
     char _name[MAX_NAME_LENGTH];
@@ -53,8 +52,7 @@ std::string hdf4cpp::HdfItem::HdfGroupItem::getName() const {
 int32 hdf4cpp::HdfItem::HdfGroupItem::getId() const {
     return id;
 }
-hdf4cpp::HdfItem::HdfGroupItem::~HdfGroupItem() {
-}
+hdf4cpp::HdfItem::HdfGroupItem::~HdfGroupItem() = default;
 hdf4cpp::HdfItem::HdfDataItem::HdfDataItem(int32 id, const HdfDestroyerChain &chain)
     : HdfItemBase(id, VDATA, chain) {
     this->chain.pushBack(new HdfDestroyer(&VSdetach, id));
@@ -62,8 +60,7 @@ hdf4cpp::HdfItem::HdfDataItem::HdfDataItem(int32 id, const HdfDestroyerChain &ch
     VSinquire(id, &nrRecords, &interlace, nullptr, &recordSize, _name);
     name = std::string(_name);
 }
-hdf4cpp::HdfItem::HdfDataItem::~HdfDataItem() {
-}
+hdf4cpp::HdfItem::HdfDataItem::~HdfDataItem() = default;
 hdf4cpp::HdfAttribute hdf4cpp::HdfItem::HdfDataItem::getAttribute(const std::string &name) const {
     return HdfAttribute(new HdfAttribute::HdfDataAttribute(id, name, chain));
 }

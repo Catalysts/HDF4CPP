@@ -19,11 +19,6 @@ target_compile_definitions(hdf4cpp-tests PRIVATE
         GTEST_DONT_DEFINE_FAIL
         GTEST_DONT_DEFINE_SUCCEED)
 
-
-if (NOT DEFINED TEST_DATA_PATH)
-    set(TEST_DATA_PATH "${PROJECT_SOURCE_DIR}/tests/test_data/")
-    message(STATUS "No path to test data defined, using ${TEST_DATA_PATH} as default")
-endif ()
 target_compile_definitions(hdf4cpp-tests PRIVATE
         "TEST_DATA_PATH=\"${TEST_DATA_PATH}\"")
 

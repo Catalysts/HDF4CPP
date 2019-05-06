@@ -51,8 +51,8 @@ class HdfAttribute : public HdfObject {
         int32 size() const;
 
       private:
-        int32 _size;
-        int32 dataType;
+        int32 _size{};
+        int32 dataType{};
 
         void get(void *dest);
         int32 getDataType() const;
@@ -81,17 +81,17 @@ class HdfAttribute : public HdfObject {
         int32 size() const;
 
       private:
-        int32 _size;
-        int32 dataType;
+        int32 _size{};
+        int32 dataType{};
         void get(void *dest);
         int32 getDataType() const;
     };
 
   public:
     HdfAttribute(const HdfAttribute &) = delete;
-    HdfAttribute(HdfAttribute &&other);
+    HdfAttribute(HdfAttribute &&other) noexcept;
     HdfAttribute &operator=(const HdfAttribute &attribute) = delete;
-    HdfAttribute &operator=(HdfAttribute &&other);
+    HdfAttribute &operator=(HdfAttribute &&other) noexcept;
     /// \returns the number of elements of the attribute data
     int32 size() const;
 

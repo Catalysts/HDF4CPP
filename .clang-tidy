@@ -1,0 +1,40 @@
+# https://clang.llvm.org/extra/clang-tidy/checks/list.html
+
+# gtest's TEST & TEST_F trigger
+# - cppcoreguidelines-owning-memory (TEST_F only)
+# - cppcoreguidelines-special-member-functions
+# - modernize-use-equals-delete
+
+# gtest's ASSERT_THROW & ASSERT_NO_THROW trigger
+# cppcoreguidelines-avoid-goto
+
+# gtest's ASSERT_EQ triggers
+# cppcoreguidelines-pro-type-vararg
+
+# cppcoreguidelines-pro-bounds-array-to-pointer-decay reports:
+#   lib/HdfFile.cpp:118:33: warning: do not implicitly decay an array into a pointer;
+#   consider using gsl::array_view or an explicit cast instead
+#        char nameGroup[MAX_NAME_LENGTH];
+#        ...
+#        if (name == std::string(nameGroup)) {
+#                                ^
+
+Checks: >-
+  bugprone-*,
+  cppcoreguidelines-*,
+  -cppcoreguidelines-avoid-goto,
+  -cppcoreguidelines-owning-memory,
+  -cppcoreguidelines-pro-bounds-array-to-pointer-decay,
+  -cppcoreguidelines-pro-type-vararg,
+  -cppcoreguidelines-special-member-functions,
+  misc-*,
+  modernize-*,
+  -modernize-use-equals-delete,
+  performance-*,
+  readability-*,
+
+# TODO fix remaining warnings in this list
+WarningsAsErrors: >-
+  *,
+  -clang-diagnostic-return-type,
+  -cppcoreguidelines-pro-bounds-pointer-arithmetic,

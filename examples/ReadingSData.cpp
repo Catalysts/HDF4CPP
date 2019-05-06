@@ -6,6 +6,7 @@
 
 using namespace hdf4cpp;
 
+// NOLINTNEXTLINE(bugprone-exception-escape)
 int main() {
     // Open the file
     HdfFile file(TEST_DATA_PATH "small_test.hdf");
@@ -33,9 +34,9 @@ int main() {
     std::vector<int32> dims = item.getDims();
     for (const auto &dim : dims) {
         if (dim >= 1) {
-            ranges.push_back(Range(0, dim - 1));
+            ranges.emplace_back(0, dim - 1);
         } else {
-            ranges.push_back(Range(0, dim));
+            ranges.emplace_back(0, dim);
         }
     }
     item.read(vec, ranges);

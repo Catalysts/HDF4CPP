@@ -20,9 +20,9 @@ class HdfFile : public HdfObject {
   public:
     HdfFile(const std::string &path);
     HdfFile(const HdfFile &file) = delete;
-    HdfFile(HdfFile &&file);
+    HdfFile(HdfFile &&file) noexcept;
     HdfFile &operator=(const HdfFile &file) = delete;
-    HdfFile &operator=(HdfFile &&file);
+    HdfFile &operator=(HdfFile &&file) noexcept;
     ~HdfFile();
 
     int32 getSId() const;

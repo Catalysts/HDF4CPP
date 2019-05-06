@@ -61,9 +61,9 @@ class HdfAttribute;
 class HdfItem : public HdfObject {
   public:
     HdfItem(const HdfItem &item) = delete;
-    HdfItem(HdfItem &&item);
+    HdfItem(HdfItem &&other) noexcept;
     HdfItem &operator=(const HdfItem &item) = delete;
-    HdfItem &operator=(HdfItem &&it);
+    HdfItem &operator=(HdfItem &&it) noexcept;
 
     /// \returns The name of the item
     std::string getName() const;
@@ -216,7 +216,7 @@ class HdfItem : public HdfObject {
 
       private:
         int32 _size;
-        int32 dataType;
+        int32 dataType{};
         std::string name;
         std::vector<int32> dims;
     };
@@ -332,12 +332,11 @@ class HdfItem : public HdfObject {
         }
 
       private:
-        int32 _size;
         std::string name;
 
-        int32 nrRecords;
-        int32 interlace;
-        int32 recordSize;
+        int32 nrRecords{};
+        int32 interlace{};
+        int32 recordSize{};
     };
 
     HdfItem(HdfItemBase *item, int32 sId, int32 vId);

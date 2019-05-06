@@ -18,7 +18,7 @@ hdf4cpp::HdfItem::HdfDatasetItem::HdfDatasetItem(int32 id, const HdfDestroyerCha
     dims = std::vector<int32>(dim, dim + size);
     _size = std::accumulate(dims.begin(), dims.end(), 1, std::multiplies<int32>());
     name = std::string(_name);
-    this->chain.pushBack(new HdfDestroyer(&SDendaccess, id));
+    this->chain.emplaceBack(&SDendaccess, id);
 }
 std::vector<int32> hdf4cpp::HdfItem::HdfDatasetItem::getDims() {
     return dims;
@@ -32,14 +32,13 @@ std::string hdf4cpp::HdfItem::HdfDatasetItem::getName() const {
 int32 hdf4cpp::HdfItem::HdfDatasetItem::getId() const {
     return id;
 }
-hdf4cpp::HdfItem::HdfDatasetItem::~HdfDatasetItem() {
-}
+hdf4cpp::HdfItem::HdfDatasetItem::~HdfDatasetItem() = default;
 hdf4cpp::HdfItem::HdfGroupItem::HdfGroupItem(int32 id, const HdfDestroyerChain &chain)
     : HdfItemBase(id, VGROUP, chain) {
     char _name[MAX_NAME_LENGTH];
     Vgetname(id, _name);
     name = std::string(_name);
-    this->chain.pushBack(new HdfDestroyer(&Vdetach, id));
+    this->chain.emplaceBack(&Vdetach, id);
 }
 std::vector<int32> hdf4cpp::HdfItem::HdfGroupItem::getDims() {
     raiseException(INVALID_OPERATION);
@@ -53,17 +52,15 @@ std::string hdf4cpp::HdfItem::HdfGroupItem::getName() const {
 int32 hdf4cpp::HdfItem::HdfGroupItem::getId() const {
     return id;
 }
-hdf4cpp::HdfItem::HdfGroupItem::~HdfGroupItem() {
-}
+hdf4cpp::HdfItem::HdfGroupItem::~HdfGroupItem() = default;
 hdf4cpp::HdfItem::HdfDataItem::HdfDataItem(int32 id, const HdfDestroyerChain &chain)
     : HdfItemBase(id, VDATA, chain) {
-    this->chain.pushBack(new HdfDestroyer(&VSdetach, id));
+    this->chain.emplaceBack(&VSdetach, id);
     char _name[MAX_NAME_LENGTH];
     VSinquire(id, &nrRecords, &interlace, nullptr, &recordSize, _name);
     name = std::string(_name);
 }
-hdf4cpp::HdfItem::HdfDataItem::~HdfDataItem() {
-}
+hdf4cpp::HdfItem::HdfDataItem::~HdfDataItem() = default;
 hdf4cpp::HdfAttribute hdf4cpp::HdfItem::HdfDataItem::getAttribute(const std::string &name) const {
     return HdfAttribute(new HdfAttribute::HdfDataAttribute(id, name, chain));
 }
@@ -82,13 +79,13 @@ hdf4cpp::HdfItem::HdfItem(HdfItemBase *item, int32 sId, int32 vId)
     , sId(sId)
     , vId(vId) {
 }
-hdf4cpp::HdfItem::HdfItem(HdfItem &&other)
+hdf4cpp::HdfItem::HdfItem(HdfItem &&other) noexcept
     : HdfObject(other.getType(), other.getClassType(), std::move(other.chain))
     , item(std::move(other.item))
     , sId(other.sId)
     , vId(other.vId) {
 }
-hdf4cpp::HdfItem &hdf4cpp::HdfItem::operator=(HdfItem &&it) {
+hdf4cpp::HdfItem &hdf4cpp::HdfItem::operator=(HdfItem &&it) noexcept {
     setType(it.getType());
     setClassType(it.getClassType());
     chain = std::move(it.chain);

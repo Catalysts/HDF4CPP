@@ -23,32 +23,32 @@ hdf4cpp::HdfFile::HdfFile(const std::string &path)
 
     Vinitialize(vId);
 
-    chain.pushBack(new HdfDestroyer(&SDend, sId));
-    chain.pushBack(new HdfDestroyer(&Vfinish, vId));
-    chain.pushBack(new HdfDestroyer(&Hclose, vId));
+    chain.emplaceBack(&SDend, sId);
+    chain.emplaceBack(&Vfinish, vId);
+    chain.emplaceBack(&Hclose, vId);
 
     int32 loneSize = Vlone(vId, nullptr, 0);
     std::vector<int32> refs((size_t)loneSize);
     Vlone(vId, refs.data(), loneSize);
     for (const auto &ref : refs) {
-        loneRefs.push_back(std::pair<int32, Type>(ref, VGROUP));
+        loneRefs.emplace_back(ref, VGROUP);
     }
 
     int32 loneVdata = VSlone(vId, nullptr, 0);
     refs.resize((size_t)loneVdata);
     VSlone(vId, refs.data(), loneVdata);
     for (const auto &ref : refs) {
-        loneRefs.push_back(std::pair<int32, Type>(ref, VDATA));
+        loneRefs.emplace_back(ref, VDATA);
     }
 }
-hdf4cpp::HdfFile::HdfFile(HdfFile &&file)
+hdf4cpp::HdfFile::HdfFile(HdfFile &&file) noexcept
     : HdfObject(file.getType(), file.getClassType(), std::move(file.chain)) {
     sId = file.sId;
     vId = file.vId;
     loneRefs = std::move(file.loneRefs);
     file.sId = file.vId = FAIL;
 }
-hdf4cpp::HdfFile &hdf4cpp::HdfFile::operator=(HdfFile &&file) {
+hdf4cpp::HdfFile &hdf4cpp::HdfFile::operator=(HdfFile &&file) noexcept {
     setType(file.getType());
     setClassType(file.getClassType());
     chain = std::move(file.chain);
@@ -125,14 +125,14 @@ std::vector<int32> hdf4cpp::HdfFile::getGroupDataIds(const std::string &name) co
     return ids;
 }
 std::vector<hdf4cpp::HdfItem> hdf4cpp::HdfFile::getAll(const std::string &name) const {
+    const std::vector<int32> &dataset_ids = getDatasetIds(name);
+    const std::vector<int32> &group_ids = getGroupDataIds(name);
     std::vector<HdfItem> items;
-    std::vector<int32> ids;
-    ids = getDatasetIds(name);
-    for (const auto &id : ids) {
+    items.reserve(dataset_ids.size() + group_ids.size());
+    for (auto &id : dataset_ids) {
         items.push_back(HdfItem(new HdfItem::HdfDatasetItem(id, chain), sId, vId));
     }
-    ids = getGroupDataIds(name);
-    for (const auto &id : ids) {
+    for (auto &id : group_ids) {
         items.push_back(HdfItem(new HdfItem::HdfGroupItem(id, chain), sId, vId));
     }
     return items;

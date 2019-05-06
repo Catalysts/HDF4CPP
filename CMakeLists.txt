@@ -67,6 +67,11 @@ endif ()
 option(HDF4CPP_BUILD_TESTS "Enable building tests" ON)
 option(HDF4CPP_BUILD_EXAMPLES "Enable building examples" ON)
 
+if (NOT DEFINED TEST_DATA_PATH)
+    set(TEST_DATA_PATH "${PROJECT_SOURCE_DIR}/tests/test_data/")
+    message(STATUS "No path to test data defined, using ${TEST_DATA_PATH} as default")
+endif ()
+
 if (HDF4CPP_BUILD_TESTS)
     add_subdirectory(tests)
 endif()

@@ -24,6 +24,10 @@ class HdfObject {
             : endFunction(endFunction)
             , id(id) {
         }
+        HdfDestroyer(const HdfDestroyer& other)
+            : endFunction(other.endFunction)
+            , id(other.id) {
+        }
         ~HdfDestroyer() {
             endFunction(id);
         }
@@ -38,14 +42,24 @@ class HdfObject {
     /// then the destructor of the destroyer will call the end access function.
     class HdfDestroyerChain {
       public:
-        HdfDestroyerChain() {
-        }
-        HdfDestroyerChain(const HdfDestroyerChain &other)
+        HdfDestroyerChain() = default;
+        HdfDestroyerChain(const HdfDestroyerChain &other) noexcept
             : chain(other.chain) {
         }
+        HdfDestroyerChain(HdfDestroyerChain &&other) noexcept
+            : chain(std::move(other.chain)) {
+        }
+        HdfDestroyerChain &operator=(const HdfDestroyerChain &other) noexcept {
+            chain = other.chain; // copy
+            return *this;
+        }
+        HdfDestroyerChain &operator=(HdfDestroyerChain &&other) noexcept {
+            chain = std::move(other.chain);
+            return *this;
+        }
 
-        void pushBack(HdfDestroyer *destroyer) {
-            chain.push_back(std::shared_ptr<HdfDestroyer>(destroyer));
+        void emplaceBack(const std::function<int32(int32)> &endFunction, int32 id) {
+            chain.emplace_back(new HdfDestroyer(endFunction, id));
         }
 
       private:
@@ -54,12 +68,12 @@ class HdfObject {
 
   public:
     /// \returns the type of the object
-    virtual Type getType() const {
+    virtual Type getType() const noexcept {
         return type;
     }
 
     /// \returns the class type of the object
-    virtual ClassType getClassType() const {
+    virtual ClassType getClassType() const noexcept {
         return classType;
     }
 
@@ -69,16 +83,21 @@ class HdfObject {
         , classType(classType)
         , chain(chain) {
     }
+    HdfObject(const Type &type, const ClassType &classType, HdfDestroyerChain &&chain)
+        : type(type)
+        , classType(classType)
+        , chain(std::move(chain)) {
+    }
     HdfObject(const HdfObject *object)
         : type(object->getType())
         , classType(object->getClassType())
         , chain(object->chain) {
     }
 
-    virtual void setType(const Type &type) {
+    virtual void setType(const Type &type) noexcept {
         this->type = type;
     }
-    virtual void setClassType(const ClassType &classType) {
+    virtual void setClassType(const ClassType &classType) noexcept {
         this->classType = classType;
     }
 

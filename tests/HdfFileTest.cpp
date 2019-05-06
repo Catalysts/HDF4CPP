@@ -9,11 +9,7 @@ using namespace hdf4cpp;
 
 class HdfFileTest : public ::testing::Test {
   protected:
-    HdfFileTest()
-        : file(std::string(TEST_DATA_PATH) + "small_test.hdf") {
-    }
-
-    HdfFile file;
+    HdfFile file{TEST_DATA_PATH "small_test.hdf"};
 };
 
 TEST_F(HdfFileTest, DatasetValidity) {

@@ -6,6 +6,7 @@
 #define HDF4CPP_HDFEXCEPTION_H
 
 #include <hdf4cpp/HdfDefines.h>
+#include <string>
 
 namespace hdf4cpp {
 
